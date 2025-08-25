@@ -2,12 +2,14 @@
 "use client";
 
 import { CartItem } from './inventory-tab';
+import { ServiceItem } from './sell-part-dialog';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 type InvoiceDetails = {
   items: CartItem[];
+  services: ServiceItem[];
   discount: number;
   customerName: string;
   customerContact: string;
@@ -22,9 +24,10 @@ interface InvoiceProps {
 }
 
 export default function Invoice({ details }: InvoiceProps) {
-  const { items, discount, customerName, customerContact, subtotal, totalAmount, invoiceId, invoiceDate } = details;
+  const { items, services, discount, customerName, customerContact, subtotal, totalAmount, invoiceId, invoiceDate } = details;
   const totalMrp = items.reduce((acc, item) => acc + item.product.mrp * item.quantity, 0);
-  const totalSavings = totalMrp - subtotal;
+  const productsSubtotal = items.reduce((acc, item) => acc + item.product.sellingPrice * item.quantity, 0);
+  const totalSavings = totalMrp - productsSubtotal;
   
   return (
     <Card className="max-w-2xl mx-auto invoice-card" id="invoice-content">
@@ -48,32 +51,59 @@ export default function Invoice({ details }: InvoiceProps) {
             <p>{customerContact}</p>
         </div>
         <Separator className="my-6" />
-        <div className="overflow-x-auto">
-            <div className="min-w-[500px]">
-                <div className="grid grid-cols-6 gap-4 font-semibold mb-2">
-                    <div className="col-span-2">Item</div>
-                    <div className="text-center">Qty</div>
-                    <div className="text-right">MRP</div>
-                    <div className="text-right">Price</div>
-                    <div className="text-right">Amount</div>
+
+        {items.length > 0 && (
+            <div className="overflow-x-auto">
+                <h3 className="text-lg font-semibold mb-2">Products</h3>
+                <div className="min-w-[500px]">
+                    <div className="grid grid-cols-items gap-4 font-semibold mb-2">
+                        <div className="col-span-2">Item</div>
+                        <div className="text-center">Qty</div>
+                        <div className="text-right">MRP</div>
+                        <div className="text-right">Price</div>
+                        <div className="text-right">Amount</div>
+                    </div>
+                    <Separator className="my-2" />
+                    <ScrollArea className="h-auto max-h-[200px] print:h-auto print:overflow-visible" id="invoice-items-scroll-area">
+                    {items.map(item => (
+                        <div key={item.product.id} className="grid grid-cols-items gap-4 items-start mb-2">
+                            <div className="col-span-2 break-words">
+                                <span className="font-medium">{item.product.name}</span>
+                                <span className="text-xs text-muted-foreground block"> ({item.product.id})</span>
+                            </div>
+                            <div className="text-center">{item.quantity}</div>
+                            <div className="text-right line-through text-muted-foreground">₹{item.product.mrp.toFixed(2)}</div>
+                            <div className="text-right">₹{item.product.sellingPrice.toFixed(2)}</div>
+                            <div className="text-right font-medium">₹{(item.product.sellingPrice * item.quantity).toFixed(2)}</div>
+                        </div>
+                    ))}
+                    </ScrollArea>
                 </div>
-                <Separator className="my-2" />
-                <ScrollArea className="h-[200px] print:h-auto print:overflow-visible" id="invoice-items-scroll-area">
-                  {items.map(item => (
-                      <div key={item.product.id} className="grid grid-cols-6 gap-4 items-start mb-2">
-                          <div className="col-span-2 break-words">
-                            <span className="font-medium">{item.product.name}</span>
-                            <span className="text-xs text-muted-foreground block"> ({item.product.id})</span>
-                          </div>
-                          <div className="text-center">{item.quantity}</div>
-                          <div className="text-right line-through text-muted-foreground">₹{item.product.mrp.toFixed(2)}</div>
-                          <div className="text-right">₹{item.product.sellingPrice.toFixed(2)}</div>
-                          <div className="text-right font-medium">₹{(item.product.sellingPrice * item.quantity).toFixed(2)}</div>
-                      </div>
-                  ))}
-                </ScrollArea>
             </div>
-        </div>
+        )}
+
+        {services.length > 0 && (
+             <div className="overflow-x-auto mt-6">
+                <h3 className="text-lg font-semibold mb-2">Services</h3>
+                <div className="min-w-[500px]">
+                    <div className="grid grid-cols-services gap-4 font-semibold mb-2">
+                        <div>Service Description</div>
+                        <div className="text-right">Cost</div>
+                    </div>
+                    <Separator className="my-2" />
+                    <ScrollArea className="h-auto max-h-[150px] print:h-auto print:overflow-visible" id="invoice-services-scroll-area">
+                        {services.map(service => (
+                            <div key={service.id} className="grid grid-cols-services gap-4 items-start mb-2">
+                                <div className="break-words font-medium">{service.name}</div>
+                                <div className="text-right font-medium">₹{service.cost.toFixed(2)}</div>
+                            </div>
+                        ))}
+                    </ScrollArea>
+                </div>
+            </div>
+        )}
+
+
         <Separator className="my-6" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div></div>
@@ -84,7 +114,7 @@ export default function Invoice({ details }: InvoiceProps) {
                 </div>
                 {totalSavings > 0 && (
                    <div className="flex justify-between text-sm">
-                        <span>Total Savings on MRP</span>
+                        <span>Total Savings on Products</span>
                         <span className='text-green-600'>- ₹{totalSavings.toFixed(2)}</span>
                    </div>
                 )}
@@ -113,13 +143,23 @@ export default function Invoice({ details }: InvoiceProps) {
              display: none !important;
            }
            #invoice-dialog {
-             display: none !important;
-           }
-           #invoice-items-scroll-area, 
-           #invoice-items-scroll-area > div {
+             display: block !important;
+             position: static !important;
+             box-shadow: none !important;
+             border: none !important;
              height: auto !important;
              overflow: visible !important;
            }
+           #invoice-items-scroll-area, 
+           #invoice-services-scroll-area,
+           #invoice-items-scroll-area > div,
+           #invoice-services-scroll-area > div {
+             height: auto !important;
+             overflow: visible !important;
+             max-height: none !important;
+           }
+           .grid-cols-items { grid-template-columns: 2.5fr 0.5fr 1fr 1fr 1fr; }
+           .grid-cols-services { grid-template-columns: 3.5fr 1.5fr; }
         }
       `}</style>
     </Card>

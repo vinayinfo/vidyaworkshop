@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 import Invoice from './invoice';
 import { CartItem } from './inventory-tab';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { PlusCircle, Trash2 } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 interface SellPartDialogProps {
   cart: CartItem[];
@@ -24,8 +26,15 @@ type SaleFormValues = {
   customerContact: string;
 };
 
+export type ServiceItem = {
+  id: string;
+  name: string;
+  cost: number;
+};
+
 type InvoiceDetails = {
   items: CartItem[];
+  services: ServiceItem[];
   discount: number;
   customerName: string;
   customerContact: string;
@@ -36,19 +45,42 @@ type InvoiceDetails = {
 };
 
 export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: SellPartDialogProps) {
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<SaleFormValues>({
+  const { register, handleSubmit, watch, formState: { errors }, control, setValue } = useForm<SaleFormValues>({
       defaultValues: { discount: 0 }
   });
   const { toast } = useToast();
   const [invoiceDetails, setInvoiceDetails] = useState<InvoiceDetails | null>(null);
+  const [services, setServices] = useState<ServiceItem[]>([]);
+  const [serviceName, setServiceName] = useState('');
+  const [serviceCost, setServiceCost] = useState('');
 
-  const subtotal = cart.reduce((acc, item) => acc + (item.product.sellingPrice * item.quantity), 0);
+  const productsSubtotal = cart.reduce((acc, item) => acc + (item.product.sellingPrice * item.quantity), 0);
+  const servicesSubtotal = services.reduce((acc, service) => acc + service.cost, 0);
+  const subtotal = productsSubtotal + servicesSubtotal;
   const discount = watch('discount') || 0;
   const totalAmount = subtotal * (1 - discount / 100);
+
+  const handleAddService = () => {
+    if (serviceName && serviceCost) {
+        const newService: ServiceItem = {
+            id: `service-${Date.now()}`,
+            name: serviceName,
+            cost: Number(serviceCost)
+        };
+        setServices(prev => [...prev, newService]);
+        setServiceName('');
+        setServiceCost('');
+    }
+  };
+
+  const handleRemoveService = (id: string) => {
+    setServices(prev => prev.filter(s => s.id !== id));
+  }
 
   const onSubmit: SubmitHandler<SaleFormValues> = (data) => {
     const newInvoiceDetails: InvoiceDetails = {
       items: cart,
+      services,
       subtotal,
       totalAmount,
       invoiceId: `INV-${Date.now()}`,
@@ -78,8 +110,10 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
             @media print {
               @page { size: auto; margin: 0.5in; }
               body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+              .min-w-\\[500px\\] > div { page-break-inside: avoid; }
+              #invoice-items-scroll-area, #invoice-services-scroll-area { height: auto !important; overflow: visible !important; }
             }
-            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.5; }
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.5; color: #333; }
             .invoice-card { max-width: 800px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 0.5rem; }
             .p-6 { padding: 1.5rem; }
             .text-2xl { font-size: 1.5rem; line-height: 2rem; }
@@ -99,8 +133,8 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
             .my-6 { margin-top: 1.5rem; margin-bottom: 1.5rem; }
             hr, .separator { border-top: 1px solid #e2e8f0; }
             .grid { display: grid; }
-            .grid-cols-6 { grid-template-columns: 2.5fr 0.5fr 1fr 1fr 1fr; }
-            .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+            .grid-cols-items { grid-template-columns: 2.5fr 0.5fr 1fr 1fr 1fr; }
+            .grid-cols-services { grid-template-columns: 3.5fr 1.5fr; }
             .gap-4 { gap: 1rem; }
             .col-span-2 { grid-column: span 2 / span 2; }
             .text-center { text-align: center; }
@@ -113,9 +147,6 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
             .text-green-600 { color: #16a34a; }
             .text-xs { font-size: 0.75rem; line-height: 1rem; }
             .text-center { text-align: center; }
-            .min-w-\\[500px\\] > div { page-break-inside: avoid; }
-            .min-w-\\[500px\\] > div.grid { page-break-inside: auto; }
-            #invoice-items-scroll-area { height: auto !important; overflow: visible !important; }
             .sm\\:flex-row { flex-direction: row; }
             .sm\\:items-center { align-items: center; }
             .sm\\:text-right { text-align: right; }
@@ -124,7 +155,7 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
           </style>
         `);
         printWindow.document.write('</head><body>');
-        printWindow.document.write(invoiceContent.innerHTML.replace('<div data-radix-scroll-area-viewport=""','<div data-radix-scroll-area-viewport="" style="height: auto !important; overflow: visible !important;"'));
+        printWindow.document.write(invoiceContent.innerHTML.replace(/data-radix-scroll-area-viewport=""/g, 'style="height: auto !important; overflow: visible !important;"'));
         printWindow.document.write('</body></html>');
         printWindow.document.close();
         printWindow.focus();
@@ -135,7 +166,6 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
       }
     }
   }
-
 
   if (invoiceDetails) {
       return (
@@ -164,29 +194,73 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
 
   return (
     <Dialog open={true} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>Finalize Sale</DialogTitle>
-           <DialogDescription>Review the order and enter customer details to generate an invoice.</DialogDescription>
+           <DialogDescription>Review the order, add services, and enter customer details to generate an invoice.</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
-          <div>
+        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6 py-4">
+          <div className="max-h-48 overflow-y-auto pr-2 space-y-2">
             <h4 className="font-medium mb-2">Order Summary</h4>
-            <div className="space-y-1 text-sm">
-              {cart.map(item => (
-                <div key={item.product.id} className="flex justify-between">
-                  <span>{item.product.name} x {item.quantity}</span>
-                  <span>₹{(item.product.sellingPrice * item.quantity).toFixed(2)}</span>
+            {cart.length > 0 ? (
+                cart.map(item => (
+                    <div key={item.product.id} className="flex justify-between text-sm">
+                    <span>{item.product.name} x {item.quantity}</span>
+                    <span>₹{(item.product.sellingPrice * item.quantity).toFixed(2)}</span>
+                    </div>
+                ))
+            ) : (
+                <p className="text-sm text-muted-foreground">No products in cart.</p>
+            )}
+            {cart.length > 0 && <Separator className="my-2" />}
+             {services.map(service => (
+                <div key={service.id} className="flex justify-between items-center text-sm">
+                    <span>{service.name}</span>
+                    <div className="flex items-center gap-2">
+                        <span>₹{service.cost.toFixed(2)}</span>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleRemoveService(service.id)}>
+                            <Trash2 className="h-3 w-3" />
+                        </Button>
+                    </div>
                 </div>
-              ))}
-            </div>
-            <div className="flex justify-between font-semibold mt-2 pt-2 border-t">
-              <span>Subtotal</span>
-              <span>₹{subtotal.toFixed(2)}</span>
+            ))}
+          </div>
+
+          <Separator />
+          
+          <div>
+            <h4 className="font-medium mb-2">Add Service</h4>
+            <div className="flex items-end gap-2">
+                <div className="grid gap-1.5 flex-grow">
+                    <Label htmlFor="serviceName">Service Description</Label>
+                    <Input id="serviceName" value={serviceName} onChange={(e) => setServiceName(e.target.value)} placeholder="e.g., General Labor" />
+                </div>
+                 <div className="grid gap-1.5 w-32">
+                    <Label htmlFor="serviceCost">Cost (₹)</Label>
+                    <Input id="serviceCost" type="number" value={serviceCost} onChange={(e) => setServiceCost(e.target.value)} placeholder="e.g., 500" />
+                </div>
+                <Button type="button" onClick={handleAddService} disabled={!serviceName || !serviceCost}>
+                    <PlusCircle className="mr-2 h-4 w-4" /> Add
+                </Button>
             </div>
           </div>
           
-          <div className="grid gap-2">
+          <Separator />
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="customerName">Customer Name</Label>
+              <Input id="customerName" {...register("customerName", { required: "Customer name is required" })} />
+              {errors.customerName && <p className="text-xs text-destructive">{errors.customerName.message}</p>}
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="customerContact">Customer Contact</Label>
+              <Input id="customerContact" {...register("customerContact", { required: "Customer contact is required" })} />
+              {errors.customerContact && <p className="text-xs text-destructive">{errors.customerContact.message}</p>}
+            </div>
+          </div>
+
+           <div className="grid gap-2">
             <Label htmlFor="discount">Additional Discount (%)</Label>
             <Input
               id="discount"
@@ -198,20 +272,19 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
             />
              {errors.discount && <p className="text-xs text-destructive">{errors.discount.message}</p>}
           </div>
-           <div className="grid gap-2">
-            <Label htmlFor="customerName">Customer Name</Label>
-            <Input id="customerName" {...register("customerName", { required: "Customer name is required" })} />
-            {errors.customerName && <p className="text-xs text-destructive">{errors.customerName.message}</p>}
+
+          <div className="mt-4 space-y-2">
+            <div className="flex justify-between font-semibold">
+              <span>Subtotal</span>
+              <span>₹{subtotal.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between font-bold text-lg text-right">
+                <span>Total</span>
+                <span>₹{totalAmount.toFixed(2)}</span>
+            </div>
           </div>
-           <div className="grid gap-2">
-            <Label htmlFor="customerContact">Customer Contact (Mobile/Email)</Label>
-            <Input id="customerContact" {...register("customerContact", { required: "Customer contact is required" })} />
-            {errors.customerContact && <p className="text-xs text-destructive">{errors.customerContact.message}</p>}
-          </div>
-          <div className="font-bold text-lg text-right">
-              Total: ₹{totalAmount.toFixed(2)}
-          </div>
-          <Button type="submit">Generate Invoice</Button>
+          
+          <Button type="submit" disabled={cart.length === 0 && services.length === 0}>Generate Invoice</Button>
         </form>
       </DialogContent>
     </Dialog>

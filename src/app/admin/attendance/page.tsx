@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import AttendanceTable from './_components/attendance-table';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import AttendanceChart from './_components/attendance-chart';
 
 
 export default function AttendancePage() {
@@ -27,6 +28,7 @@ export default function AttendancePage() {
                 </Button>
                 <h2 className="text-3xl font-bold tracking-tight">Employee Attendance</h2>
             </div>
+            <AttendanceChart />
             <AttendanceTable />
         </div>
     );

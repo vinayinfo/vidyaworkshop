@@ -28,12 +28,12 @@ export default function Invoice({ details }: InvoiceProps) {
   return (
     <Card className="max-w-2xl mx-auto" id="invoice">
       <CardHeader className="p-6">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-start flex-col sm:flex-row sm:items-center">
             <div>
                 <h1 className="text-2xl font-bold">VIDYA WORK SHOP</h1>
-                <p className="text-muted-foreground">near HOTEL MINI TAJ, Sitamarhi, Bihar 843302, India</p>
+                <p className="text-muted-foreground text-sm">near HOTEL MINI TAJ, Sitamarhi, Bihar 843302, India</p>
             </div>
-            <div className="text-right">
+            <div className="text-left sm:text-right mt-4 sm:mt-0">
                 <h2 className="text-xl font-semibold text-primary">Invoice</h2>
                 <p className="text-sm"><strong>Invoice #:</strong> {invoiceId}</p>
                 <p className="text-sm"><strong>Date:</strong> {invoiceDate}</p>
@@ -47,25 +47,29 @@ export default function Invoice({ details }: InvoiceProps) {
             <p>{customerContact}</p>
         </div>
         <Separator className="my-6" />
-        <div className="grid grid-cols-6 gap-4 font-semibold mb-2">
-            <div className="col-span-2">Item</div>
-            <div className="text-center">Qty</div>
-            <div className="text-right">MRP</div>
-            <div className="text-right">Price</div>
-            <div className="text-right">Amount</div>
-        </div>
-        <Separator className="my-2" />
-        {items.map(item => (
-            <div key={item.part.id} className="grid grid-cols-6 gap-4 items-center mb-2">
-                <div className="col-span-2">{item.part.name} ({item.part.id})</div>
-                <div className="text-center">{item.quantity}</div>
-                <div className="text-right line-through text-muted-foreground">₹{item.part.mrp.toFixed(2)}</div>
-                <div className="text-right">₹{item.part.sellingPrice.toFixed(2)}</div>
-                <div className="text-right">₹{(item.part.sellingPrice * item.quantity).toFixed(2)}</div>
+        <div className="overflow-x-auto">
+            <div className="min-w-[500px]">
+                <div className="grid grid-cols-6 gap-4 font-semibold mb-2">
+                    <div className="col-span-2">Item</div>
+                    <div className="text-center">Qty</div>
+                    <div className="text-right">MRP</div>
+                    <div className="text-right">Price</div>
+                    <div className="text-right">Amount</div>
+                </div>
+                <Separator className="my-2" />
+                {items.map(item => (
+                    <div key={item.part.id} className="grid grid-cols-6 gap-4 items-center mb-2">
+                        <div className="col-span-2">{item.part.name} ({item.part.id})</div>
+                        <div className="text-center">{item.quantity}</div>
+                        <div className="text-right line-through text-muted-foreground">₹{item.part.mrp.toFixed(2)}</div>
+                        <div className="text-right">₹{item.part.sellingPrice.toFixed(2)}</div>
+                        <div className="text-right">₹{(item.part.sellingPrice * item.quantity).toFixed(2)}</div>
+                    </div>
+                ))}
             </div>
-        ))}
+        </div>
         <Separator className="my-6" />
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div></div>
             <div className="space-y-2">
                 <div className="flex justify-between">

@@ -15,6 +15,7 @@ import OverviewChart from './_components/overview-chart';
 import DailySalesChart from './_components/daily-sales-chart';
 import AttendanceChart from './_components/attendance-chart';
 import AttendanceTable from './_components/attendance-table';
+import WeeklyLeaveChart from './_components/weekly-leave-chart';
 
 export default function Dashboard() {
     const router = useRouter();
@@ -123,6 +124,9 @@ export default function Dashboard() {
            <ExpensesTab />
         </TabsContent>
          <TabsContent value="attendance" className="space-y-4">
+           <div className="grid gap-4 md:grid-cols-2">
+             <WeeklyLeaveChart />
+           </div>
            <AttendanceTable />
         </TabsContent>
       </Tabs>

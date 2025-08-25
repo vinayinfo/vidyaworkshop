@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Phone, Clock, MapPin } from 'lucide-react';
 import Image from 'next/image';
@@ -75,16 +76,14 @@ export default function Contact() {
             </Card>
           </div>
           <div className="overflow-hidden rounded-lg shadow-xl aspect-square">
-             <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" aria-label="View workshop on Google Maps">
-                <Image
-                    src="https://placehold.co/600x600.png"
-                    alt="Map showing workshop location"
-                    data-ai-hint="city map"
-                    width={600}
-                    height={600}
-                    className="h-full w-full object-cover"
-                />
-             </a>
+            <iframe
+                className="w-full h-full"
+                src="https://www.google.com/maps/embed/v1/place?key=&q=HGM4%2B3M%20Sitamarhi%2C%20Bihar"
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Workshop Location"
+              ></iframe>
           </div>
         </div>
       </div>

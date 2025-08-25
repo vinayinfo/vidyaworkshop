@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PlusCircle, Search, QrCode, ShoppingCart, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,8 +26,37 @@ export default function InventoryTab() {
   const [isQrScannerOpen, setIsQrScannerOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [lastCartAction, setLastCartAction] = useState<{type: string, payload: any} | null>(null);
 
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (!lastCartAction) return;
+
+    switch (lastCartAction.type) {
+      case 'ADD_SUCCESS':
+        toast({ title: "Added to cart", description: `${lastCartAction.payload.name} has been added to your cart.` });
+        break;
+      case 'UPDATE_SUCCESS':
+        toast({ title: "Added to cart", description: `${lastCartAction.payload.name} quantity updated.` });
+        break;
+      case 'STOCK_LIMIT':
+        toast({ variant: 'destructive', title: "Stock limit reached", description: `Cannot add more of ${lastCartAction.payload.name}.` });
+        break;
+      case 'NOT_ENOUGH_STOCK':
+        toast({ variant: 'destructive', title: "Not enough stock", description: `Only ${lastCartAction.payload.stock} units available.` });
+        break;
+      case 'QR_NOT_FOUND':
+         toast({
+            variant: 'destructive',
+            title: 'Invalid Part ID',
+            description: `Part with ID "${lastCartAction.payload.id}" not found in inventory.`,
+          });
+        break;
+    }
+    setLastCartAction(null); // Reset after showing toast
+  }, [lastCartAction, toast]);
+
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormValues>();
 
@@ -57,11 +86,7 @@ export default function InventoryTab() {
     if (part) {
       handleAddToCart(part);
     } else {
-      toast({
-        variant: 'destructive',
-        title: 'Invalid Part ID',
-        description: `Part with ID "${partId}" not found in inventory.`,
-      });
+      setLastCartAction({ type: 'QR_NOT_FOUND', payload: { id: partId } });
     }
   };
 
@@ -70,16 +95,16 @@ export default function InventoryTab() {
       const existingItem = currentCart.find(item => item.part.id === part.id);
       if (existingItem) {
         if(existingItem.quantity < part.stock) {
-          toast({ title: "Added to cart", description: `${part.name} quantity updated.` });
+          setLastCartAction({ type: 'UPDATE_SUCCESS', payload: { name: part.name } });
           return currentCart.map(item =>
             item.part.id === part.id ? { ...item, quantity: item.quantity + 1 } : item
           );
         } else {
-           toast({ variant: 'destructive', title: "Stock limit reached", description: `Cannot add more of ${part.name}.` });
+           setLastCartAction({ type: 'STOCK_LIMIT', payload: { name: part.name } });
            return currentCart;
         }
       }
-      toast({ title: "Added to cart", description: `${part.name} has been added to your cart.` });
+      setLastCartAction({ type: 'ADD_SUCCESS', payload: { name: part.name } });
       return [...currentCart, { part, quantity: 1 }];
     });
   };
@@ -90,7 +115,7 @@ export default function InventoryTab() {
        if (!item) return currentCart;
 
        if (quantity > item.part.stock) {
-          toast({ variant: 'destructive', title: "Not enough stock", description: `Only ${item.part.stock} units available.` });
+          setLastCartAction({type: 'NOT_ENOUGH_STOCK', payload: {stock: item.part.stock}});
           return currentCart.map(i => i.part.id === partId ? { ...i, quantity: i.part.stock } : i);
        }
        
@@ -279,3 +304,5 @@ export default function InventoryTab() {
     </>
   );
 }
+
+    

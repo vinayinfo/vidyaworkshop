@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import Invoice from './invoice';
 import { CartItem } from './inventory-tab';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface SellPartDialogProps {
   cart: CartItem[];
@@ -79,12 +80,14 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
           }
           onOpenChange(open);
         }}>
-            <DialogContent className="sm:max-w-2xl">
+            <DialogContent className="sm:max-w-2xl flex flex-col h-[90vh]">
                 <DialogHeader>
                     <DialogTitle>Invoice</DialogTitle>
                 </DialogHeader>
-                <Invoice details={invoiceDetails} />
-                 <div className="flex justify-end gap-2 mt-4 print:hidden">
+                <ScrollArea className="flex-grow">
+                    <Invoice details={invoiceDetails} />
+                </ScrollArea>
+                 <div className="flex justify-end gap-2 mt-4 print:hidden flex-shrink-0">
                     <Button variant="outline" onClick={() => setInvoiceDetails(null)}>Back to Sale</Button>
                     <Button onClick={handlePrint}>Print Invoice</Button>
                     <Button onClick={handleConfirmSale}>Confirm Sale & Close</Button>

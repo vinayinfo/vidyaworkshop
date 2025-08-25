@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InventoryTab from './_components/inventory-tab';
 import BookingsTab from './_components/bookings-tab';
 import { mockProducts } from '@/lib/mock-data';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function Dashboard() {
     const router = useRouter();
@@ -70,18 +71,20 @@ export default function Dashboard() {
                     <CardTitle className="text-sm font-medium">Low Stock Alerts</CardTitle>
                     <List className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
-                <CardContent className="flex-grow">
+                <CardContent className="flex-grow flex flex-col">
                     <div className="text-2xl font-bold">{lowStockProducts.length}</div>
                     <p className="text-xs text-muted-foreground mb-2">Items with stock less than 5</p>
                     {lowStockProducts.length > 0 ? (
-                        <div className="text-sm space-y-1">
-                            {lowStockProducts.map(p => (
-                                <div key={p.id} className="flex justify-between items-center">
-                                    <span className="truncate" title={p.name}>{p.name}</span>
-                                    <span className="font-semibold text-destructive">{p.stock} left</span>
-                                </div>
-                            ))}
-                        </div>
+                        <ScrollArea className="flex-1 h-24">
+                           <div className="text-sm space-y-1 pr-2">
+                                {lowStockProducts.map(p => (
+                                    <div key={p.id} className="flex justify-between items-center">
+                                        <span className="truncate" title={p.name}>{p.name}</span>
+                                        <span className="font-semibold text-destructive">{p.stock} left</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </ScrollArea>
                     ) : (
                         <p className="text-sm text-muted-foreground mt-4">All stock levels are healthy.</p>
                     )}

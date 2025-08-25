@@ -80,14 +80,14 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
           }
           onOpenChange(open);
         }}>
-            <DialogContent className="sm:max-w-2xl flex flex-col h-[90vh]">
-                <DialogHeader>
+            <DialogContent id="invoice-dialog" className="sm:max-w-2xl flex flex-col h-[90vh]">
+                <DialogHeader className="print-hidden">
                     <DialogTitle>Invoice</DialogTitle>
                 </DialogHeader>
                 <ScrollArea className="flex-grow">
                     <Invoice details={invoiceDetails} />
                 </ScrollArea>
-                 <div className="flex justify-end gap-2 mt-4 print:hidden flex-shrink-0">
+                 <div className="flex justify-end gap-2 mt-4 print-hidden flex-shrink-0">
                     <Button variant="outline" onClick={() => setInvoiceDetails(null)}>Back to Sale</Button>
                     <Button onClick={handlePrint}>Print Invoice</Button>
                     <Button onClick={handleConfirmSale}>Confirm Sale & Close</Button>

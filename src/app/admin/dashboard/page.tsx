@@ -14,7 +14,7 @@ import Link from 'next/link';
 import OverviewChart from './_components/overview-chart';
 import DailySalesChart from './_components/daily-sales-chart';
 import AttendanceChart from './_components/attendance-chart';
-import AttendanceTable from './_components/attendance-table';
+import AttendanceCalendar from './_components/attendance-calendar';
 import WeeklyLeaveChart from './_components/weekly-leave-chart';
 
 export default function Dashboard() {
@@ -125,9 +125,11 @@ export default function Dashboard() {
            <ExpensesTab />
         </TabsContent>
          <TabsContent value="attendance" className="space-y-4">
-           <AttendanceTable />
+           <AttendanceCalendar />
         </TabsContent>
       </Tabs>
     </div>
   );
 }
+
+    

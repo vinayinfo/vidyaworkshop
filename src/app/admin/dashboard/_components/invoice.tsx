@@ -60,12 +60,15 @@ export default function Invoice({ details }: InvoiceProps) {
                 <Separator className="my-2" />
                 <ScrollArea className="h-[200px] print:h-auto print:overflow-visible" id="invoice-items-scroll-area">
                   {items.map(item => (
-                      <div key={item.product.id} className="grid grid-cols-6 gap-4 items-center mb-2">
-                          <div className="col-span-2">{item.product.name} ({item.product.id})</div>
+                      <div key={item.product.id} className="grid grid-cols-6 gap-4 items-start mb-2">
+                          <div className="col-span-2 break-words">
+                            <span className="font-medium">{item.product.name}</span>
+                            <span className="text-xs text-muted-foreground block"> ({item.product.id})</span>
+                          </div>
                           <div className="text-center">{item.quantity}</div>
                           <div className="text-right line-through text-muted-foreground">₹{item.product.mrp.toFixed(2)}</div>
                           <div className="text-right">₹{item.product.sellingPrice.toFixed(2)}</div>
-                          <div className="text-right">₹{(item.product.sellingPrice * item.quantity).toFixed(2)}</div>
+                          <div className="text-right font-medium">₹{(item.product.sellingPrice * item.quantity).toFixed(2)}</div>
                       </div>
                   ))}
                 </ScrollArea>

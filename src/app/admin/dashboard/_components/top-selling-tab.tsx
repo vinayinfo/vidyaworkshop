@@ -14,18 +14,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { isWithinInterval, startOfWeek, startOfMonth, startOfYear, endOfWeek, endOfMonth, endOfYear, parseISO } from 'date-fns';
 
 
-type TopSellingProduct = {
+type AnalyzedProduct = {
   product: Product;
   totalQuantitySold: number;
+  totalRevenue: number;
 };
 
 type TimeFilter = 'week' | 'month' | 'year' | 'lifetime';
+type RankBy = 'units' | 'revenue';
 
 export default function TopSellingTab() {
   const router = useRouter();
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('lifetime');
+  const [rankBy, setRankBy] = useState<RankBy>('units');
 
-  const topSellingProducts = useMemo((): TopSellingProduct[] => {
+  const topSellingProducts = useMemo((): AnalyzedProduct[] => {
     const now = new Date();
     let startDate: Date;
 
@@ -52,22 +55,34 @@ export default function TopSellingTab() {
     });
 
 
-    const salesCount = filteredSales.reduce((acc, sale) => {
-        acc[sale.productId] = (acc[sale.productId] || 0) + sale.quantity;
+    const salesAnalysis = filteredSales.reduce((acc, sale) => {
+        const product = mockProducts.find(p => p.id === sale.productId);
+        if (product) {
+            if (!acc[sale.productId]) {
+                acc[sale.productId] = {
+                    product: product,
+                    totalQuantitySold: 0,
+                    totalRevenue: 0,
+                };
+            }
+            acc[sale.productId].totalQuantitySold += sale.quantity;
+            acc[sale.productId].totalRevenue += sale.quantity * product.sellingPrice;
+        }
         return acc;
-    }, {} as Record<string, number>);
+    }, {} as Record<string, AnalyzedProduct>);
 
-    const sortedProductIds = Object.keys(salesCount).sort((a, b) => salesCount[b] - salesCount[a]);
+    const analyzedProductsArray = Object.values(salesAnalysis);
     
-    return sortedProductIds.map(id => {
-        const product = mockProducts.find(p => p.id === id);
-        return {
-            product: product!,
-            totalQuantitySold: salesCount[id]
-        };
-    }).filter(item => item.product);
+    analyzedProductsArray.sort((a, b) => {
+        if (rankBy === 'revenue') {
+            return b.totalRevenue - a.totalRevenue;
+        }
+        return b.totalQuantitySold - a.totalQuantitySold;
+    });
 
-  }, [timeFilter]);
+    return analyzedProductsArray;
+
+  }, [timeFilter, rankBy]);
   
   return (
     <Card>
@@ -79,21 +94,32 @@ export default function TopSellingTab() {
                 <span className="sr-only">Back</span>
             </Button>
             <div>
-              <CardTitle>Top Selling Products</CardTitle>
-              <CardDescription>Products ranked by total units sold.</CardDescription>
+              <CardTitle>Product Performance</CardTitle>
+              <CardDescription>Analyze products by units sold or revenue generated.</CardDescription>
             </div>
           </div>
-           <Select value={timeFilter} onValueChange={(value) => setTimeFilter(value as TimeFilter)}>
-                <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select period" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="week">This Week</SelectItem>
-                    <SelectItem value="month">This Month</SelectItem>
-                    <SelectItem value="year">This Year</SelectItem>
-                    <SelectItem value="lifetime">All Time</SelectItem>
-                </SelectContent>
-            </Select>
+           <div className="flex flex-col sm:flex-row gap-2">
+                <Select value={rankBy} onValueChange={(value) => setRankBy(value as RankBy)}>
+                    <SelectTrigger className="w-full sm:w-[180px]">
+                        <SelectValue placeholder="Rank by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="units">Total Units Sold</SelectItem>
+                        <SelectItem value="revenue">Total Revenue</SelectItem>
+                    </SelectContent>
+                </Select>
+                <Select value={timeFilter} onValueChange={(value) => setTimeFilter(value as TimeFilter)}>
+                    <SelectTrigger className="w-full sm:w-[180px]">
+                        <SelectValue placeholder="Select period" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="week">This Week</SelectItem>
+                        <SelectItem value="month">This Month</SelectItem>
+                        <SelectItem value="year">This Year</SelectItem>
+                        <SelectItem value="lifetime">All Time</SelectItem>
+                    </SelectContent>
+                </Select>
+           </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -137,7 +163,7 @@ export default function TopSellingTab() {
                       <Badge variant="outline">{item.product.category}</Badge>
                     </TableCell>
                     <TableCell className="text-right font-medium">{item.totalQuantitySold}</TableCell>
-                    <TableCell className="text-right font-medium">₹{(item.totalQuantitySold * item.product.sellingPrice).toLocaleString('en-IN')}</TableCell>
+                    <TableCell className="text-right font-medium">₹{item.totalRevenue.toLocaleString('en-IN')}</TableCell>
                   </TableRow>
                 ))
               ) : (

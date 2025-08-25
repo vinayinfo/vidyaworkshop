@@ -2,7 +2,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { BarChart, Bike, DollarSign, Package, Wrench, Users, List, ArrowRight, TrendingUp, TrendingDown } from "lucide-react";
+import { BarChart, Bike, DollarSign, Package, Wrench, Users, List, ArrowRight, TrendingUp, TrendingDown, CalendarCheck } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InventoryTab from './_components/inventory-tab';
@@ -48,6 +48,7 @@ export default function Dashboard() {
           <TabsTrigger value="inventory">Inventory</TabsTrigger>
           <TabsTrigger value="bookings">Bookings</TabsTrigger>
           <TabsTrigger value="expenses">Expenses</TabsTrigger>
+          <TabsTrigger value="attendance">Attendance</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -115,6 +116,22 @@ export default function Dashboard() {
         </TabsContent>
          <TabsContent value="expenses">
            <ExpensesTab />
+        </TabsContent>
+         <TabsContent value="attendance">
+           <Card>
+                <CardHeader>
+                    <CardTitle>Employee Attendance</CardTitle>
+                    <CardDescription>
+                        This is where the employee attendance analysis page will be.
+                        For now, here's a link to the dedicated page.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Button asChild>
+                        <Link href="/admin/attendance">Go to Attendance Page</Link>
+                    </Button>
+                </CardContent>
+           </Card>
         </TabsContent>
       </Tabs>
     </div>

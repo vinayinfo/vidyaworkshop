@@ -27,6 +27,20 @@ export interface Expense {
     date: string;
 }
 
+export interface Employee {
+    id: string;
+    name: string;
+    role: string;
+}
+
+export interface AttendanceRecord {
+    id: string;
+    employeeId: string;
+    date: string;
+    status: 'Present' | 'Absent' | 'On Leave';
+    reason?: string; // Optional reason for leave
+}
+
 
 export const mockProducts: Product[] = [
     { id: 'PART-001', name: 'Air Filter Assembly', category: 'Part', mrp: 750.00, sellingPrice: 720.00, stock: 15, image: 'https://images.unsplash.com/photo-1616237225529-67a423329d43?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb3RvcmN5Y2xlJTIwYWlyJTIwZmlsdGVyfGVufDB8fHx8MTc1NjExNDE0NHww&ixlib=rb-4.1.0&q=80&w=1080', imageHint: 'motorcycle air filter' },
@@ -81,4 +95,19 @@ export const mockExpenses: Expense[] = [
     { id: 'EXP-002', name: 'July Salaries', category: 'Salary', amount: 120000, date: '2024-07-05' },
     { id: 'EXP-003', name: 'Electricity Bill', category: 'Utilities', amount: 8500, date: '2024-07-10' },
     { id: 'EXP-004', name: 'Team Breakfast', category: 'Miscellaneous', amount: 2500, date: '2024-07-15' },
+];
+
+export const mockEmployees: Employee[] = [
+    { id: 'EMP-01', name: 'Suresh Kumar', role: 'Head Mechanic' },
+    { id: 'EMP-02', name: 'Ramesh Singh', role: 'Mechanic' },
+    { id: 'EMP-03', name: 'Anil Yadav', role: 'Apprentice' },
+];
+
+export const mockAttendance: AttendanceRecord[] = [
+    { id: 'ATT-001', employeeId: 'EMP-01', date: '2024-07-20', status: 'Present' },
+    { id: 'ATT-002', employeeId: 'EMP-02', date: '2024-07-20', status: 'Present' },
+    { id: 'ATT-003', employeeId: 'EMP-03', date: '2024-07-20', status: 'On Leave', reason: 'Family event' },
+    { id: 'ATT-004', employeeId: 'EMP-01', date: '2024-07-21', status: 'Present' },
+    { id: 'ATT-005', employeeId: 'EMP-02', date: '2024-07-21', status: 'Absent' },
+    { id: 'ATT-006', employeeId: 'EMP-03', date: '2024-07-21', status: 'Present' },
 ];

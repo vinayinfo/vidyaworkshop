@@ -3,7 +3,7 @@
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Wrench, Settings, Droplets, Bolt, Power, ChevronsRight, ShieldCheck, Paintbrush, Cog, Fuel, Anchor, Shell, GitCommitHorizontal, CircleDotDashed } from 'lucide-react';
+import { Wrench, ChevronsRight, Paintbrush, Cog, Bolt, Anchor, CircleDotDashed } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 

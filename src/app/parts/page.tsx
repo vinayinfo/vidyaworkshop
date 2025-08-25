@@ -57,30 +57,41 @@ export default function PartsPage() {
 
                 {filteredParts.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        {filteredParts.map(part => (
-                            <Card key={part.id} className="relative aspect-square w-full overflow-hidden rounded-lg group">
-                                <Image
-                                    src={part.image}
-                                    alt={part.name}
-                                    data-ai-hint={part.imageHint}
-                                    fill
-                                    className="object-cover transition-transform duration-300 group-hover:scale-110"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                                <CardContent className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                                    <h3 className="font-semibold text-lg truncate">{part.name}</h3>
-                                    <p className="text-sm text-gray-300">{part.id}</p>
-                                    <div className="flex justify-between items-end mt-2">
-                                        <p className="font-bold text-xl">₹{part.mrp.toFixed(2)}</p>
-                                        {part.stock > 0 ? (
-                                            <Badge variant="secondary">In Stock</Badge>
-                                        ) : (
-                                            <Badge variant="destructive">Out of Stock</Badge>
-                                        )}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
+                        {filteredParts.map(part => {
+                            const discount = ((part.mrp - part.sellingPrice) / part.mrp) * 100;
+                            return (
+                                <Card key={part.id} className="relative aspect-square w-full overflow-hidden rounded-lg group">
+                                    <Image
+                                        src={part.image}
+                                        alt={part.name}
+                                        data-ai-hint={part.imageHint}
+                                        fill
+                                        className="object-cover transition-transform duration-300 group-hover:scale-110"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                                    {discount > 0 && (
+                                        <Badge variant="destructive" className="absolute top-2 right-2">{discount.toFixed(0)}% OFF</Badge>
+                                    )}
+                                    <CardContent className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                        <h3 className="font-semibold text-lg truncate">{part.name}</h3>
+                                        <p className="text-sm text-gray-300">{part.id}</p>
+                                        <div className="flex justify-between items-end mt-2">
+                                            <div className="flex items-baseline gap-2">
+                                                <p className="font-bold text-xl">₹{part.sellingPrice.toFixed(2)}</p>
+                                                {part.sellingPrice < part.mrp && (
+                                                  <p className="text-sm text-gray-400 line-through">₹{part.mrp.toFixed(2)}</p>
+                                                )}
+                                            </div>
+                                            {part.stock > 0 ? (
+                                                <Badge variant="secondary">In Stock</Badge>
+                                            ) : (
+                                                <Badge variant="destructive">Out of Stock</Badge>
+                                            )}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )
+                        })}
                     </div>
                 ) : (
                     <div className="text-center py-16">

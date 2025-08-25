@@ -22,6 +22,9 @@ interface InvoiceProps {
 
 export default function Invoice({ details }: InvoiceProps) {
   const { items, discount, customerName, customerContact, subtotal, totalAmount, invoiceId, invoiceDate } = details;
+  const totalMrp = items.reduce((acc, item) => acc + item.part.mrp * item.quantity, 0);
+  const totalSavings = totalMrp - subtotal;
+  
   return (
     <Card className="max-w-2xl mx-auto" id="invoice">
       <CardHeader className="p-6">
@@ -44,19 +47,21 @@ export default function Invoice({ details }: InvoiceProps) {
             <p>{customerContact}</p>
         </div>
         <Separator className="my-6" />
-        <div className="grid grid-cols-5 gap-4 font-semibold mb-2">
+        <div className="grid grid-cols-6 gap-4 font-semibold mb-2">
             <div className="col-span-2">Item</div>
             <div className="text-center">Qty</div>
+            <div className="text-right">MRP</div>
             <div className="text-right">Price</div>
             <div className="text-right">Amount</div>
         </div>
         <Separator className="my-2" />
         {items.map(item => (
-            <div key={item.part.id} className="grid grid-cols-5 gap-4 items-center mb-2">
+            <div key={item.part.id} className="grid grid-cols-6 gap-4 items-center mb-2">
                 <div className="col-span-2">{item.part.name} ({item.part.id})</div>
                 <div className="text-center">{item.quantity}</div>
-                <div className="text-right">₹{item.part.mrp.toFixed(2)}</div>
-                <div className="text-right">₹{(item.part.mrp * item.quantity).toFixed(2)}</div>
+                <div className="text-right line-through text-muted-foreground">₹{item.part.mrp.toFixed(2)}</div>
+                <div className="text-right">₹{item.part.sellingPrice.toFixed(2)}</div>
+                <div className="text-right">₹{(item.part.sellingPrice * item.quantity).toFixed(2)}</div>
             </div>
         ))}
         <Separator className="my-6" />
@@ -67,8 +72,14 @@ export default function Invoice({ details }: InvoiceProps) {
                     <span>Subtotal</span>
                     <span>₹{subtotal.toFixed(2)}</span>
                 </div>
+                {totalSavings > 0 && (
+                   <div className="flex justify-between text-sm">
+                        <span>Total Savings on MRP</span>
+                        <span className='text-green-600'>- ₹{totalSavings.toFixed(2)}</span>
+                   </div>
+                )}
                  <div className="flex justify-between">
-                    <span>Discount</span>
+                    <span>Additional Discount</span>
                     <span className="text-destructive">- {discount}%</span>
                 </div>
                 <Separator />
@@ -98,7 +109,7 @@ export default function Invoice({ details }: InvoiceProps) {
             border: none;
             box-shadow: none;
           }
-          .print\:hidden {
+          .print\\:hidden {
               display: none;
           }
         }

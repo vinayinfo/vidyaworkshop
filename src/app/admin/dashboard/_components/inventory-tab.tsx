@@ -85,7 +85,10 @@ export default function InventoryTab() {
       id: `PART-${Date.now()}`,
       ...data,
       mrp: Number(data.mrp),
+      sellingPrice: Number(data.sellingPrice),
       stock: Number(data.stock),
+      image: 'https://placehold.co/400x400.png',
+      imageHint: 'new part'
     };
     setParts(prevParts => [newPart, ...prevParts]);
     toast({
@@ -149,7 +152,7 @@ export default function InventoryTab() {
     setCart(currentCart => currentCart.filter(item => item.part.id !== partId));
   }
 
-  const cartTotal = cart.reduce((total, item) => total + item.part.mrp * item.quantity, 0);
+  const cartTotal = cart.reduce((total, item) => total + item.part.sellingPrice * item.quantity, 0);
 
   const handleSaleComplete = (soldItems: CartItem[]) => {
     setParts(currentParts => {
@@ -202,10 +205,17 @@ export default function InventoryTab() {
                             <Input id="name" {...register("name", { required: "Name is required" })} />
                             {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
                         </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="mrp">MRP (₹)</Label>
-                            <Input id="mrp" type="number" {...register("mrp", { required: "MRP is required", min: 0 })} />
-                            {errors.mrp && <p className="text-xs text-destructive">{errors.mrp.message}</p>}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="grid gap-2">
+                              <Label htmlFor="mrp">MRP (₹)</Label>
+                              <Input id="mrp" type="number" step="0.01" {...register("mrp", { required: "MRP is required", min: 0 })} />
+                              {errors.mrp && <p className="text-xs text-destructive">{errors.mrp.message}</p>}
+                          </div>
+                           <div className="grid gap-2">
+                              <Label htmlFor="sellingPrice">Selling Price (₹)</Label>
+                              <Input id="sellingPrice" type="number" step="0.01" {...register("sellingPrice", { required: "Selling Price is required", min: 0 })} />
+                              {errors.sellingPrice && <p className="text-xs text-destructive">{errors.sellingPrice.message}</p>}
+                          </div>
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="stock">Stock Quantity</Label>
@@ -226,6 +236,7 @@ export default function InventoryTab() {
                   <TableRow>
                     <TableHead>Part Name</TableHead>
                     <TableHead>Part ID</TableHead>
+                    <TableHead>Price (MRP/Sell)</TableHead>
                     <TableHead>Stock</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
@@ -235,6 +246,12 @@ export default function InventoryTab() {
                     <TableRow key={part.id}>
                       <TableCell className="font-medium">{part.name}</TableCell>
                       <TableCell>{part.id}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-col">
+                            <span className="line-through text-muted-foreground">₹{part.mrp.toFixed(2)}</span>
+                            <span className="font-medium">₹{part.sellingPrice.toFixed(2)}</span>
+                        </div>
+                      </TableCell>
                       <TableCell>{part.stock}</TableCell>
                       <TableCell className="text-right">
                         <Button variant="outline" size="sm" onClick={() => handleAddToCart(part)} disabled={part.stock === 0}>
@@ -289,7 +306,7 @@ export default function InventoryTab() {
                                 <div key={item.part.id} className="flex flex-wrap justify-between items-center gap-y-2">
                                     <div className="flex-grow pr-4">
                                         <p className="font-medium">{item.part.name}</p>
-                                        <p className="text-sm text-muted-foreground">₹{item.part.mrp.toFixed(2)}</p>
+                                        <p className="text-sm text-muted-foreground">₹{item.part.sellingPrice.toFixed(2)}</p>
                                     </div>
                                     <div className="flex items-center gap-2 flex-shrink-0">
                                         <Input 
@@ -347,5 +364,3 @@ export default function InventoryTab() {
     </>
   );
 }
-
-    

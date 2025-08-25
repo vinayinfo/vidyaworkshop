@@ -241,7 +241,7 @@ export default function AttendanceCalendar() {
                     </Dialog>
                 </div>
             </CardHeader>
-            <CardContent className="p-0 sm:p-2 flex justify-center">
+            <CardContent className="p-0 sm:p-2">
                 <Calendar
                     mode="single"
                     selected={selectedDay ?? undefined}

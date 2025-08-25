@@ -48,14 +48,13 @@ export default function About() {
               </div>
             </div>
           </div>
-          <div>
+          <div className="aspect-square relative">
             <Image
               src="https://images.unsplash.com/photo-1727968720589-15babbb42d1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyMHx8ZW5maWVsZHxlbnwwfHx8fDE3NTYxMjI0NzB8MA&ixlib=rb-4.1.0&q=80&w=1080"
               alt="Interior of Vidya Workshop with a motorcycle being serviced"
               data-ai-hint="motorcycle workshop"
-              width={600}
-              height={450}
-              className="rounded-lg shadow-xl"
+              fill
+              className="rounded-lg shadow-xl object-cover"
             />
           </div>
         </div>

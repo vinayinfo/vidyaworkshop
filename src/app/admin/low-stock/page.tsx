@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Search, FileText } from 'lucide-react';
+import { ArrowLeft, Search, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
 import { mockProducts, Product } from '@/lib/mock-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -13,11 +13,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import PurchaseOrderDialog from '../dashboard/_components/purchase-order-dialog';
 
 const LOW_STOCK_THRESHOLD = 5;
+const PRODUCTS_PER_PAGE = 10;
 
 export default function LowStockPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
   const [isPoDialogOpen, setIsPoDialogOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
 
   useEffect(() => {
@@ -37,6 +39,13 @@ export default function LowStockPage() {
       p.id.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [lowStockProducts, searchTerm]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
+  const paginatedProducts = filteredProducts.slice((currentPage - 1) * PRODUCTS_PER_PAGE, currentPage * PRODUCTS_PER_PAGE);
   
   const handleSelectProduct = (product: Product, isSelected: boolean) => {
     if (isSelected) {
@@ -48,13 +57,14 @@ export default function LowStockPage() {
 
   const handleSelectAll = (isSelected: boolean) => {
     if (isSelected) {
-      setSelectedProducts(filteredProducts);
+      setSelectedProducts(paginatedProducts);
     } else {
-      setSelectedProducts([]);
+      setSelectedProducts(prev => prev.filter(p => !paginatedProducts.some(pp => pp.id === p.id)));
     }
   };
   
-  const isAllSelected = filteredProducts.length > 0 && selectedProducts.length === filteredProducts.length;
+  const isAllOnPageSelected = paginatedProducts.length > 0 && paginatedProducts.every(p => selectedProducts.some(sp => sp.id === p.id));
+
 
   return (
     <>
@@ -104,9 +114,9 @@ export default function LowStockPage() {
                   <TableRow>
                     <TableHead className="w-[50px]">
                        <Checkbox
-                        checked={isAllSelected}
+                        checked={isAllOnPageSelected}
                         onCheckedChange={(checked) => handleSelectAll(Boolean(checked))}
-                        aria-label="Select all"
+                        aria-label="Select all on page"
                       />
                     </TableHead>
                     <TableHead>Product Name</TableHead>
@@ -116,8 +126,8 @@ export default function LowStockPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredProducts.length > 0 ? (
-                      filteredProducts.map(product => (
+                  {paginatedProducts.length > 0 ? (
+                      paginatedProducts.map(product => (
                           <TableRow 
                             key={product.id}
                             data-state={selectedProducts.some(p => p.id === product.id) && "selected"}
@@ -145,6 +155,33 @@ export default function LowStockPage() {
                 </TableBody>
               </Table>
             </div>
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4">
+                    <span className="text-sm text-muted-foreground">
+                        Page {currentPage} of {totalPages}
+                    </span>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                            Previous
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                        >
+                            Next
+                            <ChevronRight className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+            )}
           </CardContent>
         </Card>
       </div>

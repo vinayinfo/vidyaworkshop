@@ -19,7 +19,7 @@ export default function Hero() {
             Precision & Passion for Your Ride
           </h1>
           <p className="mt-6 text-lg leading-8 text-gray-300">
-            Welcome to Torque Garage, the premier destination for Bullet Bike enthusiasts. From routine servicing to custom modifications, we handle your prized possession with expert care.
+            Welcome to VIDYA WORK SHOP, the premier destination for Bullet Bike enthusiasts. From routine servicing to custom modifications, we handle your prized possession with expert care.
           </p>
           <div className="mt-10">
             <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">

@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Torque Garage',
+  title: 'VIDYA WORK SHOP',
   description: 'Expert Bullet Bike repair, servicing, and genuine spare parts at Vidya Workshop.',
 };
 

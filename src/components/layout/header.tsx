@@ -34,9 +34,9 @@ export default function Header() {
       )}
     >
       <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
-        <Link href="/" className="flex items-center gap-2" aria-label="Torque Garage Home">
+        <Link href="/" className="flex items-center gap-2" aria-label="VIDYA WORK SHOP Home">
           <Bike className="h-8 w-8 text-primary" />
-          <span className="text-xl font-bold text-foreground">Torque Garage</span>
+          <span className="text-xl font-bold text-foreground">VIDYA WORK SHOP</span>
         </Link>
         <nav className="hidden items-center gap-6 md:flex">
           {navLinks.map((link) => (
@@ -63,7 +63,7 @@ export default function Header() {
                 <SheetClose asChild>
                   <Link href="/" className="mb-8 flex items-center gap-2">
                     <Bike className="h-8 w-8 text-primary" />
-                    <span className="text-xl font-bold">Torque Garage</span>
+                    <span className="text-xl font-bold">VIDYA WORK SHOP</span>
                   </Link>
                 </SheetClose>
                 <nav className="flex flex-col gap-4">

@@ -24,7 +24,7 @@ export default function Footer() {
         <div className="flex flex-col gap-4">
           <Link href="/" className="flex items-center gap-2">
             <Bike className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold">Torque Garage</span>
+            <span className="text-xl font-bold">VIDYA WORK SHOP</span>
           </Link>
           <p className="text-sm text-muted-foreground">
             Your one-stop shop for Bullet Bike excellence. Quality service, genuine parts.
@@ -52,7 +52,7 @@ export default function Footer() {
             </li>
             <li className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
-              <span>contact@torquegarage.com</span>
+              <span>contact@vidyaworkshop.com</span>
             </li>
             <li className="flex items-center gap-2">
               <MapPin className="h-4 w-4" />
@@ -70,7 +70,7 @@ export default function Footer() {
       </div>
       <div className="border-t">
         <div className="container mx-auto flex flex-col items-center justify-between gap-2 px-4 py-4 sm:flex-row md:px-6">
-          <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} Torque Garage. All rights reserved.</p>
+          <p className="text-xs text-muted-foreground">&copy; {new Date().getFullYear()} VIDYA WORK SHOP. All rights reserved.</p>
           <p className="text-xs text-muted-foreground">A Vidya Workshop Venture</p>
         </div>
       </div>

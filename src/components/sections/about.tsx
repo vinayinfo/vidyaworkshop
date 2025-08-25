@@ -6,7 +6,7 @@ import { Users, ShieldCheck } from 'lucide-react';
 export default function About() {
   const testimonials = [
     {
-      quote: "The team at Torque Garage is phenomenal. They treated my Classic 350 like their own. Best service in town!",
+      quote: "The team at VIDYA WORK SHOP is phenomenal. They treated my Classic 350 like their own. Best service in town!",
       name: "Rohan Sharma",
       avatar: "https://placehold.co/40x40.png",
       avatarHint: "man portrait"
@@ -29,7 +29,7 @@ export default function About() {
               A Legacy of Trust & Two-Wheeler Passion
             </h2>
             <p className="text-muted-foreground">
-              Founded over a decade ago, Vidya Workshop started as a small garage with a big dream: to provide unparalleled service for Royal Enfield enthusiasts. Today, as Torque Garage, we carry forward that legacy, combining traditional craftsmanship with modern technology. Our 10-strong team of certified mechanics shares a deep passion for these iconic machines.
+              Founded over a decade ago, Vidya Workshop started as a small garage with a big dream: to provide unparalleled service for Royal Enfield enthusiasts. Today, as VIDYA WORK SHOP, we carry forward that legacy, combining traditional craftsmanship with modern technology. Our 10-strong team of certified mechanics shares a deep passion for these iconic machines.
             </p>
             <div className="flex gap-8 pt-4">
               <div className="flex items-center gap-3">

@@ -266,12 +266,14 @@ export default function AttendanceCalendar() {
                                 <span className="font-medium text-sm">{format(day, 'd')}</span>
                                 {summary && (
                                     <Popover>
-                                        <PopoverTrigger className="mt-2 flex-grow w-full flex flex-col items-center justify-center cursor-pointer rounded-md hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring">
-                                            <div className="flex justify-center gap-1 flex-wrap">
-                                                {summary.present > 0 && <div className="w-2 h-2 rounded-full bg-primary" title={`${summary.present} Present`}/>}
-                                                {summary.absent > 0 && <div className="w-2 h-2 rounded-full bg-destructive" title={`${summary.absent} Absent`}/>}
-                                                {summary.onLeave > 0 && <div className="w-2 h-2 rounded-full bg-muted-foreground" title={`${summary.onLeave} On Leave`}/>}
-                                            </div>
+                                        <PopoverTrigger asChild>
+                                            <Button variant="ghost" className="mt-2 flex-grow w-full h-full flex flex-col items-center justify-center cursor-pointer rounded-md hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring p-1">
+                                                <div className="flex justify-center gap-1 flex-wrap">
+                                                    {summary.present > 0 && <div className="w-2 h-2 rounded-full bg-primary" title={`${summary.present} Present`}/>}
+                                                    {summary.absent > 0 && <div className="w-2 h-2 rounded-full bg-destructive" title={`${summary.absent} Absent`}/>}
+                                                    {summary.onLeave > 0 && <div className="w-2 h-2 rounded-full bg-muted-foreground" title={`${summary.onLeave} On Leave`}/>}
+                                                </div>
+                                            </Button>
                                         </PopoverTrigger>
                                         <PopoverContent className="w-80">
                                             <div className="grid gap-4">

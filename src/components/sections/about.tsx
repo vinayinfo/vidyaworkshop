@@ -50,9 +50,9 @@ export default function About() {
           </div>
           <div>
             <Image
-              src="https://placehold.co/600x450.png"
-              alt="Interior of Vidya Workshop"
-              data-ai-hint="mechanic garage"
+              src="https://images.unsplash.com/photo-1542273042-5c73bc895ba3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb3RvcmN5Y2xlJTIwc2VydmljZXxlbnwwfHx8fDE3NTYxMDgyMDR8MA&ixlib=rb-4.1.0&q=80&w=1080"
+              alt="Interior of Vidya Workshop with a motorcycle being serviced"
+              data-ai-hint="motorcycle workshop"
               width={600}
               height={450}
               className="rounded-lg shadow-xl"

@@ -1,7 +1,8 @@
+
 "use client";
 
 import { useState } from 'react';
-import { PlusCircle, Search, QrCode } from 'lucide-react';
+import { PlusCircle, Search, QrCode, ShoppingCart, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,15 +14,18 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { Label } from '@/components/ui/label';
 import SellPartDialog from './sell-part-dialog';
 import QrScannerDialog from './qr-scanner-dialog';
+import { Separator } from '@/components/ui/separator';
 
 type FormValues = Omit<Part, 'id'>;
+export type CartItem = { part: Part; quantity: number };
 
 export default function InventoryTab() {
   const [parts, setParts] = useState<Part[]>(mockParts);
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddPartDialogOpen, setIsAddPartDialogOpen] = useState(false);
   const [isQrScannerOpen, setIsQrScannerOpen] = useState(false);
-  const [partToSell, setPartToSell] = useState<Part | null>(null);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [cart, setCart] = useState<CartItem[]>([]);
 
   const { toast } = useToast();
 
@@ -46,25 +50,12 @@ export default function InventoryTab() {
     reset();
     setIsAddPartDialogOpen(false);
   };
-
-  const handleSell = (part: Part) => {
-    setPartToSell(part);
-  }
-
-  const handleSaleComplete = (partId: string, quantitySold: number) => {
-    setParts(currentParts =>
-      currentParts.map(part =>
-        part.id === partId ? { ...part, stock: part.stock - quantitySold } : part
-      )
-    );
-    setPartToSell(null); // Close dialog
-  };
   
   const handleQrScan = (partId: string) => {
     setIsQrScannerOpen(false);
     const part = parts.find(p => p.id === partId);
     if (part) {
-      setPartToSell(part);
+      handleAddToCart(part);
     } else {
       toast({
         variant: 'destructive',
@@ -74,88 +65,202 @@ export default function InventoryTab() {
     }
   };
 
+  const handleAddToCart = (part: Part) => {
+    setCart(currentCart => {
+      const existingItem = currentCart.find(item => item.part.id === part.id);
+      if (existingItem) {
+        if(existingItem.quantity < part.stock) {
+          toast({ title: "Added to cart", description: `${part.name} quantity updated.` });
+          return currentCart.map(item =>
+            item.part.id === part.id ? { ...item, quantity: item.quantity + 1 } : item
+          );
+        } else {
+           toast({ variant: 'destructive', title: "Stock limit reached", description: `Cannot add more of ${part.name}.` });
+           return currentCart;
+        }
+      }
+      toast({ title: "Added to cart", description: `${part.name} has been added to your cart.` });
+      return [...currentCart, { part, quantity: 1 }];
+    });
+  };
+
+  const updateCartQuantity = (partId: string, quantity: number) => {
+    setCart(currentCart => {
+       const item = currentCart.find(item => item.part.id === partId);
+       if (!item) return currentCart;
+
+       if (quantity > item.part.stock) {
+          toast({ variant: 'destructive', title: "Not enough stock", description: `Only ${item.part.stock} units available.` });
+          return currentCart.map(i => i.part.id === partId ? { ...i, quantity: i.part.stock } : i);
+       }
+       
+       if (quantity <= 0) {
+         return currentCart.filter(item => item.part.id !== partId);
+       }
+
+       return currentCart.map(item =>
+         item.part.id === partId ? { ...item, quantity } : item
+       );
+    })
+  }
+
+  const removeFromCart = (partId: string) => {
+    setCart(currentCart => currentCart.filter(item => item.part.id !== partId));
+  }
+
+  const cartTotal = cart.reduce((total, item) => total + item.part.mrp * item.quantity, 0);
+
+  const handleSaleComplete = (soldItems: CartItem[]) => {
+    setParts(currentParts => {
+      return currentParts.map(part => {
+        const soldItem = soldItems.find(item => item.part.id === part.id);
+        if (soldItem) {
+          return { ...part, stock: part.stock - soldItem.quantity };
+        }
+        return part;
+      });
+    });
+    setCart([]); // Clear cart
+    setIsCheckoutOpen(false); // Close dialog
+  };
+
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Parts Inventory</CardTitle>
-          <div className="flex justify-between items-center pt-4 gap-2">
-            <div className="relative w-full max-w-sm">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search parts..."
-                className="pl-8"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Parts Inventory</CardTitle>
+            <div className="flex justify-between items-center pt-4 gap-2">
+              <div className="relative w-full max-w-sm">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search parts..."
+                  className="pl-8"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                  <Button variant="outline" onClick={() => setIsQrScannerOpen(true)}>
+                    <QrCode className="mr-2 h-4 w-4" /> Scan
+                  </Button>
+                  <Dialog open={isAddPartDialogOpen} onOpenChange={setIsAddPartDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button>
+                        <PlusCircle className="mr-2 h-4 w-4" /> Add Part
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add New Part</DialogTitle>
+                      </DialogHeader>
+                      <form onSubmit={handleSubmit(onAddPartSubmit)} className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="name">Part Name</Label>
+                            <Input id="name" {...register("name", { required: "Name is required" })} />
+                            {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="mrp">MRP (₹)</Label>
+                            <Input id="mrp" type="number" {...register("mrp", { required: "MRP is required", min: 0 })} />
+                            {errors.mrp && <p className="text-xs text-destructive">{errors.mrp.message}</p>}
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="stock">Stock Quantity</Label>
+                            <Input id="stock" type="number" {...register("stock", { required: "Stock is required", min: 0 })} />
+                            {errors.stock && <p className="text-xs text-destructive">{errors.stock.message}</p>}
+                        </div>
+                        <Button type="submit">Save Part</Button>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+              </div>
             </div>
-             <div className="flex items-center gap-2">
-                <Button variant="outline" onClick={() => setIsQrScannerOpen(true)}>
-                  <QrCode className="mr-2 h-4 w-4" /> Scan Part
-                </Button>
-                <Dialog open={isAddPartDialogOpen} onOpenChange={setIsAddPartDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button>
-                      <PlusCircle className="mr-2 h-4 w-4" /> Add Part
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Add New Part</DialogTitle>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmit(onAddPartSubmit)} className="grid gap-4 py-4">
-                      <div className="grid gap-2">
-                          <Label htmlFor="name">Part Name</Label>
-                          <Input id="name" {...register("name", { required: "Name is required" })} />
-                          {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
-                      </div>
-                      <div className="grid gap-2">
-                          <Label htmlFor="mrp">MRP (₹)</Label>
-                          <Input id="mrp" type="number" {...register("mrp", { required: "MRP is required", min: 0 })} />
-                          {errors.mrp && <p className="text-xs text-destructive">{errors.mrp.message}</p>}
-                      </div>
-                      <div className="grid gap-2">
-                          <Label htmlFor="stock">Stock Quantity</Label>
-                          <Input id="stock" type="number" {...register("stock", { required: "Stock is required", min: 0 })} />
-                          {errors.stock && <p className="text-xs text-destructive">{errors.stock.message}</p>}
-                      </div>
-                      <Button type="submit">Save Part</Button>
-                    </form>
-                  </DialogContent>
-                </Dialog>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Part Name</TableHead>
-                <TableHead>Part ID</TableHead>
-                <TableHead>MRP (₹)</TableHead>
-                <TableHead>Stock</TableHead>
-                <TableHead className="text-right">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredParts.map(part => (
-                <TableRow key={part.id}>
-                  <TableCell className="font-medium">{part.name}</TableCell>
-                  <TableCell>{part.id}</TableCell>
-                  <TableCell>{part.mrp.toFixed(2)}</TableCell>
-                  <TableCell>{part.stock}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="outline" size="sm" onClick={() => handleSell(part)} disabled={part.stock === 0}>
-                      Sell
-                    </Button>
-                  </TableCell>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Part Name</TableHead>
+                  <TableHead>Part ID</TableHead>
+                  <TableHead>Stock</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              </TableHeader>
+              <TableBody>
+                {filteredParts.map(part => (
+                  <TableRow key={part.id}>
+                    <TableCell className="font-medium">{part.name}</TableCell>
+                    <TableCell>{part.id}</TableCell>
+                    <TableCell>{part.stock}</TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="outline" size="sm" onClick={() => handleAddToCart(part)} disabled={part.stock === 0}>
+                        Add to Cart
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <ShoppingCart className="h-5 w-5" />
+                    Current Sale
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                {cart.length > 0 ? (
+                    <div className="flex flex-col h-full">
+                        <div className="flex-grow space-y-4">
+                            {cart.map(item => (
+                                <div key={item.part.id} className="flex justify-between items-center">
+                                    <div>
+                                        <p className="font-medium">{item.part.name}</p>
+                                        <p className="text-sm text-muted-foreground">₹{item.part.mrp.toFixed(2)}</p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Input 
+                                            type="number" 
+                                            className="w-16 h-8"
+                                            value={item.quantity}
+                                            onChange={(e) => updateCartQuantity(item.part.id, parseInt(e.target.value))}
+                                            min="1"
+                                            max={item.part.stock}
+                                        />
+                                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeFromCart(item.part.id)}>
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <Separator className="my-4" />
+                        <div className="space-y-2">
+                            <div className="flex justify-between font-semibold">
+                                <span>Subtotal</span>
+                                <span>₹{cartTotal.toFixed(2)}</span>
+                            </div>
+                        </div>
+                        <Button className="mt-4 w-full" onClick={() => setIsCheckoutOpen(true)}>
+                            Proceed to Invoice
+                        </Button>
+                    </div>
+                ) : (
+                    <div className="text-center py-10 text-muted-foreground">
+                        <ShoppingCart className="mx-auto h-12 w-12" />
+                        <p className="mt-4">Your cart is empty</p>
+                        <p className="text-sm">Add parts from the inventory to start a sale.</p>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+
+      </div>
       
       {isQrScannerOpen && (
         <QrScannerDialog 
@@ -164,10 +269,10 @@ export default function InventoryTab() {
         />
       )}
 
-      {partToSell && (
+      {isCheckoutOpen && cart.length > 0 && (
         <SellPartDialog 
-          part={partToSell}
-          onOpenChange={() => setPartToSell(null)}
+          cart={cart}
+          onOpenChange={() => setIsCheckoutOpen(false)}
           onSaleComplete={handleSaleComplete}
         />
       )}

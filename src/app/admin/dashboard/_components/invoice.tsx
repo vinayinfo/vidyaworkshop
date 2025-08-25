@@ -1,16 +1,16 @@
 
 "use client";
 
-import { Part } from '@/lib/mock-data';
+import { CartItem } from './inventory-tab';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
 type InvoiceDetails = {
-  part: Part;
-  quantity: number;
+  items: CartItem[];
   discount: number;
   customerName: string;
   customerContact: string;
+  subtotal: number;
   totalAmount: number;
   invoiceId: string;
   invoiceDate: string;
@@ -21,7 +21,7 @@ interface InvoiceProps {
 }
 
 export default function Invoice({ details }: InvoiceProps) {
-  const { part, quantity, discount, customerName, customerContact, totalAmount, invoiceId, invoiceDate } = details;
+  const { items, discount, customerName, customerContact, subtotal, totalAmount, invoiceId, invoiceDate } = details;
   return (
     <Card className="max-w-2xl mx-auto" id="invoice">
       <CardHeader className="p-6">
@@ -46,24 +46,26 @@ export default function Invoice({ details }: InvoiceProps) {
         <Separator className="my-6" />
         <div className="grid grid-cols-5 gap-4 font-semibold mb-2">
             <div className="col-span-2">Item</div>
-            <div>Qty</div>
+            <div className="text-center">Qty</div>
             <div className="text-right">Price</div>
             <div className="text-right">Amount</div>
         </div>
         <Separator className="my-2" />
-        <div className="grid grid-cols-5 gap-4 items-center">
-            <div className="col-span-2">{part.name} ({part.id})</div>
-            <div>{quantity}</div>
-            <div className="text-right">₹{part.mrp.toFixed(2)}</div>
-            <div className="text-right">₹{(part.mrp * quantity).toFixed(2)}</div>
-        </div>
+        {items.map(item => (
+            <div key={item.part.id} className="grid grid-cols-5 gap-4 items-center mb-2">
+                <div className="col-span-2">{item.part.name} ({item.part.id})</div>
+                <div className="text-center">{item.quantity}</div>
+                <div className="text-right">₹{item.part.mrp.toFixed(2)}</div>
+                <div className="text-right">₹{(item.part.mrp * item.quantity).toFixed(2)}</div>
+            </div>
+        ))}
         <Separator className="my-6" />
         <div className="grid grid-cols-2 gap-4">
             <div></div>
             <div className="space-y-2">
                 <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>₹{(part.mrp * quantity).toFixed(2)}</span>
+                    <span>₹{subtotal.toFixed(2)}</span>
                 </div>
                  <div className="flex justify-between">
                     <span>Discount</span>

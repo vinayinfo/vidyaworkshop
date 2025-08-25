@@ -7,67 +7,62 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Part } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import Invoice from './invoice';
+import { CartItem } from './inventory-tab';
 
 interface SellPartDialogProps {
-  part: Part;
+  cart: CartItem[];
   onOpenChange: (open: boolean) => void;
-  onSaleComplete: (partId: string, quantitySold: number) => void;
+  onSaleComplete: (soldItems: CartItem[]) => void;
 }
 
 type SaleFormValues = {
-  quantity: number;
   discount: number;
   customerName: string;
   customerContact: string;
 };
 
-type InvoiceDetails = SaleFormValues & {
-    part: Part;
-    totalAmount: number;
-    invoiceId: string;
-    invoiceDate: string;
-}
+type InvoiceDetails = {
+  items: CartItem[];
+  discount: number;
+  customerName: string;
+  customerContact: string;
+  subtotal: number;
+  totalAmount: number;
+  invoiceId: string;
+  invoiceDate: string;
+};
 
-export default function SellPartDialog({ part, onOpenChange, onSaleComplete }: SellPartDialogProps) {
+export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: SellPartDialogProps) {
   const { register, handleSubmit, watch, formState: { errors } } = useForm<SaleFormValues>({
-      defaultValues: { quantity: 1, discount: 0 }
+      defaultValues: { discount: 0 }
   });
   const { toast } = useToast();
   const [invoiceDetails, setInvoiceDetails] = useState<InvoiceDetails | null>(null);
 
-  const quantity = watch('quantity', 1);
+  const subtotal = cart.reduce((acc, item) => acc + (item.part.mrp * item.quantity), 0);
+  const discount = watch('discount') || 0;
+  const totalAmount = subtotal * (1 - discount / 100);
 
   const onSubmit: SubmitHandler<SaleFormValues> = (data) => {
-    if (data.quantity > part.stock) {
-      toast({
-        variant: 'destructive',
-        title: 'Out of Stock',
-        description: `Only ${part.stock} units of ${part.name} available.`,
-      });
-      return;
-    }
-    
-    const totalAmount = (part.mrp * data.quantity) * (1 - data.discount / 100);
-
     const newInvoiceDetails: InvoiceDetails = {
-      ...data,
-      part,
+      items: cart,
+      subtotal,
       totalAmount,
       invoiceId: `INV-${Date.now()}`,
       invoiceDate: new Date().toLocaleDateString(),
+      ...data,
     }
     setInvoiceDetails(newInvoiceDetails);
   };
     
   const handleConfirmSale = () => {
     if(!invoiceDetails) return;
-    onSaleComplete(part.id, invoiceDetails.quantity);
+    onSaleComplete(invoiceDetails.items);
     toast({
         title: 'Sale Completed',
-        description: `Sold ${invoiceDetails.quantity} of ${part.name}. Invoice generated.`,
+        description: `Invoice ${invoiceDetails.invoiceId} generated.`,
     });
   }
   
@@ -98,30 +93,25 @@ export default function SellPartDialog({ part, onOpenChange, onSaleComplete }: S
     <Dialog open={true} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Sell Part: {part.name}</DialogTitle>
+          <DialogTitle>Finalize Sale</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label>Price (MRP)</Label>
-            <Input value={`₹${part.mrp.toFixed(2)}`} readOnly disabled />
+          <div>
+            <h4 className="font-medium mb-2">Order Summary</h4>
+            <div className="space-y-1 text-sm">
+              {cart.map(item => (
+                <div key={item.part.id} className="flex justify-between">
+                  <span>{item.part.name} x {item.quantity}</span>
+                  <span>₹{(item.part.mrp * item.quantity).toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-between font-semibold mt-2 pt-2 border-t">
+              <span>Subtotal</span>
+              <span>₹{subtotal.toFixed(2)}</span>
+            </div>
           </div>
-          <div className="grid gap-2">
-            <Label>Available Stock</Label>
-            <Input value={part.stock} readOnly disabled />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="quantity">Quantity</Label>
-            <Input
-              id="quantity"
-              type="number"
-              {...register("quantity", { 
-                required: "Quantity is required", 
-                min: { value: 1, message: "Quantity must be at least 1" },
-                max: { value: part.stock, message: "Not enough stock" }
-              })}
-            />
-            {errors.quantity && <p className="text-xs text-destructive">{errors.quantity.message}</p>}
-          </div>
+          
           <div className="grid gap-2">
             <Label htmlFor="discount">Discount (%)</Label>
             <Input
@@ -145,7 +135,7 @@ export default function SellPartDialog({ part, onOpenChange, onSaleComplete }: S
             {errors.customerContact && <p className="text-xs text-destructive">{errors.customerContact.message}</p>}
           </div>
           <div className="font-bold text-lg text-right">
-              Total: ₹{((part.mrp * (quantity || 0)) * (1 - (watch('discount') || 0) / 100)).toFixed(2)}
+              Total: ₹{totalAmount.toFixed(2)}
           </div>
           <Button type="submit">Generate Invoice</Button>
         </form>

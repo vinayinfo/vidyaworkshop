@@ -5,21 +5,22 @@ import { useState, useMemo } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
+import { Calendar as CalendarIcon } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { mockEmployees, mockAttendance, Employee, AttendanceRecord } from '@/lib/mock-data';
-import { format, parseISO } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, parseISO } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { CalendarIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Calendar } from '@/components/ui/calendar';
+
 
 const attendanceSchema = z.object({
   employeeId: z.string({ required_error: "Please select an employee." }),
@@ -49,7 +50,6 @@ export default function AttendanceCalendar() {
     const [attendance, setAttendance] = useState<AttendanceRecord[]>(mockAttendance);
     const [employees] = useState<Employee[]>(mockEmployees);
     const [currentMonth, setCurrentMonth] = useState(new Date());
-    const [selectedDay, setSelectedDay] = useState<Date | null>(null);
     const [isAddEntryDialogOpen, setIsAddEntryDialogOpen] = useState(false);
 
     const { toast } = useToast();
@@ -105,44 +105,12 @@ export default function AttendanceCalendar() {
         }
     }
 
-    const DayContent = ({ date }: { date: Date }) => {
-        const dayKey = format(date, 'yyyy-MM-dd');
-        const summary = dailySummaries.get(dayKey);
-        
-        if (!summary) return null;
+    const start = startOfMonth(currentMonth);
+    const end = endOfMonth(currentMonth);
+    const days = eachDayOfInterval({ start, end });
+    const startingDayOfWeek = getDay(start);
+    const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-        const total = summary.present + summary.absent + summary.onLeave;
-        if(total === 0) return null;
-
-        return (
-            <Popover>
-                <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
-                    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-full px-1 flex justify-center gap-0.5">
-                        {summary.present > 0 && <div className="w-1.5 h-1.5 rounded-full bg-primary" title={`${summary.present} Present`}/>}
-                        {summary.absent > 0 && <div className="w-1.5 h-1.5 rounded-full bg-destructive" title={`${summary.absent} Absent`}/>}
-                        {summary.onLeave > 0 && <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground" title={`${summary.onLeave} On Leave`}/>}
-                    </div>
-                </PopoverTrigger>
-                <PopoverContent className="w-80" onClick={(e) => e.stopPropagation()}>
-                     <div className="grid gap-4">
-                        <div className="space-y-2">
-                            <h4 className="font-medium leading-none">{format(date, "PPP")}</h4>
-                            <p className="text-sm text-muted-foreground">Attendance Details</p>
-                        </div>
-                        <div className="grid gap-2">
-                             {summary.records.map(record => (
-                                <div key={record.id} className="grid grid-cols-[1fr,auto] items-center">
-                                    <span className="font-medium text-sm">{getEmployeeName(record.employeeId)}</span>
-                                     <Badge variant={getStatusVariant(record.status)}>{record.status}</Badge>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </PopoverContent>
-            </Popover>
-        );
-    }
-    
     return (
          <Card>
             <CardHeader>
@@ -241,21 +209,64 @@ export default function AttendanceCalendar() {
                     </Dialog>
                 </div>
             </CardHeader>
-            <CardContent className="p-0 sm:p-2">
-                <Calendar
-                    mode="single"
-                    selected={selectedDay ?? undefined}
-                    onSelect={(day) => setSelectedDay(day ?? null)}
-                    month={currentMonth}
-                    onMonthChange={setCurrentMonth}
-                    className="p-0"
-                    components={{
-                        DayContent: DayContent
-                    }}
-                />
+            <CardContent className="p-4">
+                 <div className="flex items-center justify-between mb-4">
+                    <Button variant="outline" size="icon" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
+                        <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <h3 className="text-lg font-semibold">{format(currentMonth, "MMMM yyyy")}</h3>
+                    <Button variant="outline" size="icon" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
+                </div>
+                <div className="grid grid-cols-7 gap-1 text-center font-semibold text-sm text-muted-foreground">
+                    {weekDays.map(day => <div key={day}>{day}</div>)}
+                </div>
+                <div className="grid grid-cols-7 gap-1 mt-2">
+                     {Array.from({ length: startingDayOfWeek }).map((_, index) => (
+                        <div key={`empty-${index}`} className="border rounded-md p-2 h-24 bg-muted/50" />
+                    ))}
+                    {days.map((day, index) => {
+                         const dayKey = format(day, 'yyyy-MM-dd');
+                         const summary = dailySummaries.get(dayKey);
+
+                         return (
+                            <div key={index} className="border rounded-md p-2 h-24 flex flex-col">
+                                <span className="font-medium text-sm">{format(day, 'd')}</span>
+                                {summary && (
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <div className="mt-2 flex-grow flex flex-col items-center justify-center cursor-pointer">
+                                                <div className="flex justify-center gap-1 flex-wrap">
+                                                    {summary.present > 0 && <div className="w-2 h-2 rounded-full bg-primary" title={`${summary.present} Present`}/>}
+                                                    {summary.absent > 0 && <div className="w-2 h-2 rounded-full bg-destructive" title={`${summary.absent} Absent`}/>}
+                                                    {summary.onLeave > 0 && <div className="w-2 h-2 rounded-full bg-muted-foreground" title={`${summary.onLeave} On Leave`}/>}
+                                                </div>
+                                            </div>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-80">
+                                            <div className="grid gap-4">
+                                                <div className="space-y-2">
+                                                    <h4 className="font-medium leading-none">{format(day, "PPP")}</h4>
+                                                    <p className="text-sm text-muted-foreground">Attendance Details</p>
+                                                </div>
+                                                <div className="grid gap-2">
+                                                     {summary.records.map(record => (
+                                                        <div key={record.id} className="grid grid-cols-[1fr,auto] items-center">
+                                                            <span className="font-medium text-sm">{getEmployeeName(record.employeeId)}</span>
+                                                             <Badge variant={getStatusVariant(record.status)}>{record.status}</Badge>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </PopoverContent>
+                                    </Popover>
+                                )}
+                            </div>
+                         )
+                    })}
+                </div>
             </CardContent>
         </Card>
     )
 }
-
-    

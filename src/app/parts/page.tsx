@@ -3,13 +3,22 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Search } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Search, Cog, Bolt, Anchor, GitCommitHorizontal, Shell, Fuel } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import { Input } from '@/components/ui/input';
 import { mockProducts } from '@/lib/mock-data';
+
+const partCategories = [
+    { name: "Engine Parts", icon: <Cog className="h-8 w-8 text-primary" /> },
+    { name: "Electrical Parts", icon: <Bolt className="h-8 w-8 text-primary" /> },
+    { name: "Brake Parts", icon: <Anchor className="h-8 w-8 text-primary" /> },
+    { name: "Suspension & Steering", icon: <GitCommitHorizontal className="h-8 w-8 text-primary" /> },
+    { name: "Body & Frame", icon: <Shell className="h-8 w-8 text-primary" /> },
+    { name: "Consumables", icon: <Fuel className="h-8 w-8 text-primary" /> },
+];
 
 export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -39,15 +48,32 @@ export default function ProductsPage() {
                 </p>
              </div>
         </section>
+
+         <section className="py-16 bg-secondary">
+            <div className="container mx-auto px-4 md:px-6">
+                <h2 className="text-3xl font-bold text-center mb-10">Our Spare Part Categories</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                    {partCategories.map(category => (
+                         <Card key={category.name} className="flex flex-col items-center justify-center p-4 text-center hover:shadow-lg transition-shadow">
+                            <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                                {category.icon}
+                            </div>
+                            <CardTitle className="text-base font-semibold">{category.name}</CardTitle>
+                        </Card>
+                    ))}
+                </div>
+            </div>
+        </section>
         
         <section className="py-16 sm:py-24">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="mb-8 flex justify-center">
+                 <h2 className="text-3xl font-bold text-center mb-4">Search Our Inventory</h2>
+                <div className="mb-12 flex justify-center">
                     <div className="relative w-full max-w-lg">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                         <Input
                             type="search"
-                            placeholder="Search for products..."
+                            placeholder="Search for products by name..."
                             className="w-full rounded-full pl-10 pr-4 py-2 text-lg"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}

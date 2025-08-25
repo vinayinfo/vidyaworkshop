@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -58,7 +59,7 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
-          <Button>Book a Service</Button>
+          <Button asChild><Link href="/book-service">Book a Service</Link></Button>
            <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon">
@@ -115,7 +116,9 @@ export default function Header() {
                       </Link>
                     </SheetClose>
                   ))}
-                  <Button className="mt-4">Book a Service</Button>
+                  <SheetClose asChild>
+                    <Button asChild className="mt-4"><Link href="/book-service">Book a Service</Link></Button>
+                  </SheetClose>
                 </nav>
               </div>
             </SheetContent>

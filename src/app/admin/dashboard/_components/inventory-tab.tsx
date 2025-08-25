@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { PlusCircle, Search } from 'lucide-react';
+import { PlusCircle, Search, QrCode } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,7 @@ import { mockParts, Part } from '@/lib/mock-data';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Label } from '@/components/ui/label';
 import SellPartDialog from './sell-part-dialog';
+import QrScannerDialog from './qr-scanner-dialog';
 
 type FormValues = Omit<Part, 'id'>;
 
@@ -19,6 +20,7 @@ export default function InventoryTab() {
   const [parts, setParts] = useState<Part[]>(mockParts);
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddPartDialogOpen, setIsAddPartDialogOpen] = useState(false);
+  const [isQrScannerOpen, setIsQrScannerOpen] = useState(false);
   const [partToSell, setPartToSell] = useState<Part | null>(null);
 
   const { toast } = useToast();
@@ -57,13 +59,27 @@ export default function InventoryTab() {
     );
     setPartToSell(null); // Close dialog
   };
+  
+  const handleQrScan = (partId: string) => {
+    setIsQrScannerOpen(false);
+    const part = parts.find(p => p.id === partId);
+    if (part) {
+      setPartToSell(part);
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Invalid Part ID',
+        description: `Part with ID "${partId}" not found in inventory.`,
+      });
+    }
+  };
 
   return (
     <>
       <Card>
         <CardHeader>
           <CardTitle>Parts Inventory</CardTitle>
-          <div className="flex justify-between items-center pt-4">
+          <div className="flex justify-between items-center pt-4 gap-2">
             <div className="relative w-full max-w-sm">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
@@ -74,36 +90,41 @@ export default function InventoryTab() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Dialog open={isAddPartDialogOpen} onOpenChange={setIsAddPartDialogOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <PlusCircle className="mr-2 h-4 w-4" /> Add Part
+             <div className="flex items-center gap-2">
+                <Button variant="outline" onClick={() => setIsQrScannerOpen(true)}>
+                  <QrCode className="mr-2 h-4 w-4" /> Scan Part
                 </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Add New Part</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleSubmit(onAddPartSubmit)} className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                      <Label htmlFor="name">Part Name</Label>
-                      <Input id="name" {...register("name", { required: "Name is required" })} />
-                      {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
-                  </div>
-                  <div className="grid gap-2">
-                      <Label htmlFor="mrp">MRP (₹)</Label>
-                      <Input id="mrp" type="number" {...register("mrp", { required: "MRP is required", min: 0 })} />
-                      {errors.mrp && <p className="text-xs text-destructive">{errors.mrp.message}</p>}
-                  </div>
-                  <div className="grid gap-2">
-                      <Label htmlFor="stock">Stock Quantity</Label>
-                      <Input id="stock" type="number" {...register("stock", { required: "Stock is required", min: 0 })} />
-                      {errors.stock && <p className="text-xs text-destructive">{errors.stock.message}</p>}
-                  </div>
-                  <Button type="submit">Save Part</Button>
-                </form>
-              </DialogContent>
-            </Dialog>
+                <Dialog open={isAddPartDialogOpen} onOpenChange={setIsAddPartDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button>
+                      <PlusCircle className="mr-2 h-4 w-4" /> Add Part
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add New Part</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmit(onAddPartSubmit)} className="grid gap-4 py-4">
+                      <div className="grid gap-2">
+                          <Label htmlFor="name">Part Name</Label>
+                          <Input id="name" {...register("name", { required: "Name is required" })} />
+                          {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+                      </div>
+                      <div className="grid gap-2">
+                          <Label htmlFor="mrp">MRP (₹)</Label>
+                          <Input id="mrp" type="number" {...register("mrp", { required: "MRP is required", min: 0 })} />
+                          {errors.mrp && <p className="text-xs text-destructive">{errors.mrp.message}</p>}
+                      </div>
+                      <div className="grid gap-2">
+                          <Label htmlFor="stock">Stock Quantity</Label>
+                          <Input id="stock" type="number" {...register("stock", { required: "Stock is required", min: 0 })} />
+                          {errors.stock && <p className="text-xs text-destructive">{errors.stock.message}</p>}
+                      </div>
+                      <Button type="submit">Save Part</Button>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -135,6 +156,14 @@ export default function InventoryTab() {
           </Table>
         </CardContent>
       </Card>
+      
+      {isQrScannerOpen && (
+        <QrScannerDialog 
+            onScan={handleQrScan}
+            onOpenChange={setIsQrScannerOpen}
+        />
+      )}
+
       {partToSell && (
         <SellPartDialog 
           part={partToSell}

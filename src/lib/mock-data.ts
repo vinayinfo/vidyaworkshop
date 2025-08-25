@@ -19,6 +19,15 @@ export interface Booking {
     status: 'Pending' | 'In Progress' | 'Completed' | 'Cancelled';
 }
 
+export interface Expense {
+    id: string;
+    name: string;
+    category: 'Rent' | 'Salary' | 'Utilities' | 'Marketing' | 'Miscellaneous';
+    amount: number;
+    date: string;
+}
+
+
 export const mockProducts: Product[] = [
     { id: 'PART-001', name: 'Air Filter Assembly', category: 'Part', mrp: 750.00, sellingPrice: 720.00, stock: 15, image: 'https://images.unsplash.com/photo-1616237225529-67a423329d43?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb3RvcmN5Y2xlJTIwYWlyJTIwZmlsdGVyfGVufDB8fHx8MTc1NjExNDE0NHww&ixlib=rb-4.1.0&q=80&w=1080', imageHint: 'motorcycle air filter' },
     { id: 'PART-002', name: 'Clutch Cable', category: 'Part', mrp: 350.50, sellingPrice: 330.00, stock: 25, image: 'https://images.unsplash.com/photo-1600863001099-a6a1a153d605?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb3RvcmN5Y2xlJTIwY2x1dGNoJTIwY2FibGV8ZW58MHx8fHwxNzU2MTE0MTYxfDA&ixlib=rb-4.1.0&q=80&w=1080', imageHint: 'motorcycle clutch cable' },
@@ -65,8 +74,11 @@ export const mockDailySales = [
   { name: "Thu", total: Math.floor(Math.random() * 5000) + 1000 },
   { name: "Fri", total: Math.floor(Math.random() * 5000) + 1000 },
   { name: "Sat", total: Math.floor(Math.random() * 5000) + 1000 },
-]
+];
 
-    
-
-    
+export const mockExpenses: Expense[] = [
+    { id: 'EXP-001', name: 'Workshop Rent', category: 'Rent', amount: 50000, date: '2024-07-01' },
+    { id: 'EXP-002', name: 'July Salaries', category: 'Salary', amount: 120000, date: '2024-07-05' },
+    { id: 'EXP-003', name: 'Electricity Bill', category: 'Utilities', amount: 8500, date: '2024-07-10' },
+    { id: 'EXP-004', name: 'Team Breakfast', category: 'Miscellaneous', amount: 2500, date: '2024-07-15' },
+];

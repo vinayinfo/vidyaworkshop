@@ -87,7 +87,7 @@ export default function Invoice({ details }: InvoiceProps) {
                 <h3 className="text-lg font-semibold mb-2">Services</h3>
                 <div className="min-w-[500px]">
                     <div className="grid grid-cols-services gap-4 font-semibold mb-2">
-                        <div>Service Description</div>
+                        <div>Service Name</div>
                         <div className="text-right">Cost</div>
                     </div>
                     <Separator className="my-2" />

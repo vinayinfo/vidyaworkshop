@@ -110,8 +110,6 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
             @media print {
               @page { size: auto; margin: 0.5in; }
               body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-              .min-w-\\[500px\\] > div { page-break-inside: avoid; }
-              #invoice-items-scroll-area, #invoice-services-scroll-area { height: auto !important; overflow: visible !important; }
             }
             body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.5; color: #333; }
             .invoice-card { max-width: 800px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 0.5rem; }
@@ -133,9 +131,8 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
             .my-6 { margin-top: 1.5rem; margin-bottom: 1.5rem; }
             hr, .separator { border-top: 1px solid #e2e8f0; }
             .grid { display: grid; }
-            .grid-cols-items { grid-template-columns: 2.5fr 0.5fr 1fr 1fr 1fr; }
-            .grid-cols-services { grid-template-columns: 3.5fr 1.5fr; }
-            .gap-4 { gap: 1rem; }
+            .grid-cols-items { grid-template-columns: 2.5fr 0.5fr 1fr 1fr 1fr; gap: 1rem; }
+            .grid-cols-services { grid-template-columns: 3.5fr 1.5fr; gap: 1rem; }
             .col-span-2 { grid-column: span 2 / span 2; }
             .text-center { text-align: center; }
             .font-medium { font-weight: 500; }
@@ -155,7 +152,7 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
           </style>
         `);
         printWindow.document.write('</head><body>');
-        printWindow.document.write(invoiceContent.innerHTML.replace(/data-radix-scroll-area-viewport=""/g, 'style="height: auto !important; overflow: visible !important;"'));
+        printWindow.document.write(invoiceContent.innerHTML);
         printWindow.document.write('</body></html>');
         printWindow.document.close();
         printWindow.focus();
@@ -232,7 +229,7 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
             <h4 className="font-medium mb-2">Add Service</h4>
             <div className="flex items-end gap-2">
                 <div className="grid gap-1.5 flex-grow">
-                    <Label htmlFor="serviceName">Service Description</Label>
+                    <Label htmlFor="serviceName">Service Name</Label>
                     <Input id="serviceName" value={serviceName} onChange={(e) => setServiceName(e.target.value)} placeholder="e.g., General Labor" />
                 </div>
                  <div className="grid gap-1.5 w-32">

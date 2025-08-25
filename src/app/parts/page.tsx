@@ -1,17 +1,19 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Image from 'next/image';
-import { Search, Cog, Bolt, Anchor, GitCommitHorizontal, Shell, Fuel, CircleDotDashed, Wrench, Shield, VenetianMask } from 'lucide-react';
+import { Search, Cog, Bolt, Anchor, Shell, Fuel, CircleDotDashed, Wrench, Shield, VenetianMask, Tags, List } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import { Input } from '@/components/ui/input';
 import { mockProducts } from '@/lib/mock-data';
+import { cn } from '@/lib/utils';
 
 const partCategories = [
+    { name: "All Categories", icon: <List className="h-8 w-8 text-primary" /> },
     { name: "Engine Parts", icon: <Cog className="h-8 w-8 text-primary" /> },
     { name: "Electrical Parts", icon: <Bolt className="h-8 w-8 text-primary" /> },
     { name: "Braking System", icon: <Anchor className="h-8 w-8 text-primary" /> },
@@ -24,10 +26,16 @@ const partCategories = [
 
 export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All Categories');
 
-  const filteredProducts = mockProducts.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProducts = useMemo(() => {
+    return mockProducts.filter(product => {
+      const matchesCategory = selectedCategory === 'All Categories' || product.category === selectedCategory;
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [searchTerm, selectedCategory]);
+
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -54,9 +62,16 @@ export default function ProductsPage() {
          <section className="py-16 bg-secondary">
             <div className="container mx-auto px-4 md:px-6">
                 <h2 className="text-3xl font-bold text-center mb-10">Our Spare Part Categories</h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-9 gap-6">
                     {partCategories.map(category => (
-                         <Card key={category.name} className="flex flex-col items-center justify-center p-4 text-center hover:shadow-lg transition-shadow">
+                         <Card 
+                            key={category.name} 
+                            className={cn(
+                                "flex flex-col items-center justify-center p-4 text-center hover:shadow-lg transition-all cursor-pointer",
+                                selectedCategory === category.name ? "bg-primary/20 border-primary" : "bg-card"
+                            )}
+                            onClick={() => setSelectedCategory(category.name)}
+                         >
                             <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
                                 {category.icon}
                             </div>
@@ -123,7 +138,12 @@ export default function ProductsPage() {
                     </div>
                 ) : (
                     <div className="text-center py-16">
-                        <p className="text-xl text-muted-foreground">No products found for "{searchTerm}".</p>
+                         <p className="text-xl text-muted-foreground">
+                            {searchTerm 
+                                ? `No products found for "${searchTerm}" in ${selectedCategory}`
+                                : `No products found in ${selectedCategory}`
+                            }
+                        </p>
                     </div>
                 )}
             </div>

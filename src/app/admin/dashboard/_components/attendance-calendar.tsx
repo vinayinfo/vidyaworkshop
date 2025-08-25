@@ -267,13 +267,13 @@ export default function AttendanceCalendar() {
                                 {summary && (
                                     <Popover>
                                         <PopoverTrigger asChild>
-                                            <div className="mt-2 flex-grow flex flex-col items-center justify-center cursor-pointer">
+                                            <button className="mt-2 flex-grow flex flex-col items-center justify-center cursor-pointer rounded-md hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring">
                                                 <div className="flex justify-center gap-1 flex-wrap">
                                                     {summary.present > 0 && <div className="w-2 h-2 rounded-full bg-primary" title={`${summary.present} Present`}/>}
                                                     {summary.absent > 0 && <div className="w-2 h-2 rounded-full bg-destructive" title={`${summary.absent} Absent`}/>}
                                                     {summary.onLeave > 0 && <div className="w-2 h-2 rounded-full bg-muted-foreground" title={`${summary.onLeave} On Leave`}/>}
                                                 </div>
-                                            </div>
+                                            </button>
                                         </PopoverTrigger>
                                         <PopoverContent className="w-80">
                                             <div className="grid gap-4">

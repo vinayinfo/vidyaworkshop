@@ -56,7 +56,7 @@ export default function Invoice({ details }: InvoiceProps) {
             <div className="overflow-x-auto">
                 <h3 className="text-lg font-semibold mb-2">Products</h3>
                 <div className="min-w-[500px]">
-                    <div className="grid grid-cols-items gap-4 font-semibold mb-2">
+                    <div className="grid grid-cols-[2.5fr,0.5fr,1fr,1fr,1fr] gap-4 font-semibold mb-2">
                         <div className="col-span-2">Item</div>
                         <div className="text-center">Qty</div>
                         <div className="text-right">MRP</div>
@@ -66,7 +66,7 @@ export default function Invoice({ details }: InvoiceProps) {
                     <Separator className="my-2" />
                     <ScrollArea className="h-auto max-h-[200px] print:h-auto print:overflow-visible" id="invoice-items-scroll-area">
                     {items.map(item => (
-                        <div key={item.product.id} className="grid grid-cols-items gap-4 items-start mb-2">
+                        <div key={item.product.id} className="grid grid-cols-[2.5fr,0.5fr,1fr,1fr,1fr] gap-4 items-start mb-2">
                             <div className="col-span-2 break-words">
                                 <span className="font-medium">{item.product.name}</span>
                                 <span className="text-xs text-muted-foreground block"> ({item.product.id})</span>
@@ -86,14 +86,14 @@ export default function Invoice({ details }: InvoiceProps) {
              <div className="overflow-x-auto mt-6">
                 <h3 className="text-lg font-semibold mb-2">Services</h3>
                 <div className="min-w-[500px]">
-                    <div className="grid grid-cols-services gap-4 font-semibold mb-2">
+                    <div className="grid grid-cols-[3.5fr,1.5fr] gap-4 font-semibold mb-2">
                         <div>Service Name</div>
                         <div className="text-right">Cost</div>
                     </div>
                     <Separator className="my-2" />
                     <ScrollArea className="h-auto max-h-[150px] print:h-auto print:overflow-visible" id="invoice-services-scroll-area">
                         {services.map(service => (
-                            <div key={service.id} className="grid grid-cols-services gap-4 items-start mb-2">
+                            <div key={service.id} className="grid grid-cols-[3.5fr,1.5fr] gap-4 items-start mb-2">
                                 <div className="break-words font-medium">{service.name}</div>
                                 <div className="text-right font-medium">₹{service.cost.toFixed(2)}</div>
                             </div>
@@ -158,12 +158,8 @@ export default function Invoice({ details }: InvoiceProps) {
              overflow: visible !important;
              max-height: none !important;
            }
-           .grid-cols-items { grid-template-columns: 2.5fr 0.5fr 1fr 1fr 1fr; }
-           .grid-cols-services { grid-template-columns: 3.5fr 1.5fr; }
         }
       `}</style>
     </Card>
   )
 }
-
-    

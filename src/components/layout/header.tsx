@@ -2,10 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Bike, Menu } from 'lucide-react';
+import { Bike, Menu, Wrench } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -21,9 +30,10 @@ export default function Header() {
   }, []);
 
   const navLinks = [
-    { href: '#services', label: 'Services' },
-    { href: '#about', label: 'About Us' },
-    { href: '#contact', label: 'Contact' },
+    { href: '/#services', label: 'Services' },
+    { href: '/parts', label: 'Parts' },
+    { href: '/#about', label: 'About Us' },
+    { href: '/#contact', label: 'Contact' },
   ];
 
   return (
@@ -49,8 +59,36 @@ export default function Header() {
             </Link>
           ))}
           <Button>Book a Service</Button>
+           <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                    <Wrench className="h-4 w-4"/>
+                    <span className="sr-only">Admin Menu</span>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuLabel>Admin Area</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild><Link href="/admin/dashboard">Dashboard</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/admin">Login</Link></DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
         </nav>
-        <div className="md:hidden">
+        <div className="md:hidden flex items-center gap-2">
+            <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                    <Wrench className="h-4 w-4"/>
+                    <span className="sr-only">Admin Menu</span>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuLabel>Admin Area</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild><Link href="/admin/dashboard">Dashboard</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/admin">Login</Link></DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon">

@@ -241,14 +241,14 @@ export default function AttendanceCalendar() {
                     </Dialog>
                 </div>
             </CardHeader>
-            <CardContent className="p-0 sm:p-4">
+            <CardContent className="p-0 sm:p-2 flex justify-center">
                 <Calendar
                     mode="single"
                     selected={selectedDay ?? undefined}
                     onSelect={(day) => setSelectedDay(day ?? null)}
                     month={currentMonth}
                     onMonthChange={setCurrentMonth}
-                    className="p-0 w-full"
+                    className="p-0"
                     components={{
                         DayContent: DayContent
                     }}
@@ -256,10 +256,6 @@ export default function AttendanceCalendar() {
             </CardContent>
         </Card>
     )
-
-    
-
-    
 }
 
     

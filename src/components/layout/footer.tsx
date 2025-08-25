@@ -56,7 +56,7 @@ export default function Footer() {
             </li>
             <li className="flex items-center gap-2">
               <MapPin className="h-4 w-4" />
-              <span>123 Bike Lane, Mechanic Nagar, Pune</span>
+              <span>near HOTEL MINI TAJ, Sitamarhi, Bihar 843302, India</span>
             </li>
           </ul>
         </div>

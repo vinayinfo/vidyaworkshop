@@ -59,7 +59,7 @@ export default function Contact() {
                 <MapPin className="h-8 w-8 text-primary" />
                 <div>
                   <h3 className="font-semibold">Visit Us</h3>
-                  <p className="text-muted-foreground">123 Bike Lane, Mechanic Nagar, Pune, Maharashtra 411001</p>
+                  <p className="text-muted-foreground">near HOTEL MINI TAJ, Sitamarhi, Bihar 843302, India</p>
                 </div>
               </CardContent>
             </Card>

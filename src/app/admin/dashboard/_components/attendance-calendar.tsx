@@ -63,25 +63,23 @@ export default function AttendanceCalendar() {
     const [employees] = useState<Employee[]>(mockEmployees);
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [isAddEntryDialogOpen, setIsAddEntryDialogOpen] = useState(false);
-    const [defaultTime, setDefaultTime] = useState('');
     const router = useRouter();
 
     const { toast } = useToast();
 
-    const { register, handleSubmit, control, watch, reset, formState: { errors } } = useForm<AttendanceFormValues>({
-        resolver: zodResolver(attendanceSchema),
-        defaultValues: {
-            entryTime: '',
-        }
+    const { register, handleSubmit, control, watch, reset, setValue, formState: { errors } } = useForm<AttendanceFormValues>({
+        resolver: zodResolver(attendanceSchema)
     });
 
-    useEffect(() => {
-        if (isAddEntryDialogOpen) {
-            setDefaultTime(new Date().toTimeString().slice(0,5));
-        }
-    }, [isAddEntryDialogOpen]);
-
     const watchStatus = watch('status');
+
+    useEffect(() => {
+        if (watchStatus === 'Present') {
+             setValue('entryTime', new Date().toTimeString().slice(0, 5));
+        } else {
+            setValue('entryTime', '');
+        }
+    }, [watchStatus, setValue]);
 
     const dailySummaries = useMemo(() => {
         const summaries = new Map<string, DailyAttendanceSummary>();
@@ -226,14 +224,14 @@ export default function AttendanceCalendar() {
                                     </div>
                                 </div>
                                 
-                                {watchStatus === 'Present' && (
+                                <div className="grid grid-cols-1 gap-4">
                                     <div className="grid gap-2">
                                         <Label htmlFor="entryTime">Entry Time</Label>
-                                        <Input id="entryTime" type="time" {...register("entryTime")} defaultValue={defaultTime} />
+                                        <Input id="entryTime" type="time" {...register("entryTime")} disabled={watchStatus !== 'Present'} />
                                         {errors.entryTime && <p className="text-xs text-destructive">{errors.entryTime.message}</p>}
                                     </div>
-                                )}
-                                
+                                </div>
+
                                 {watchStatus === 'On Leave' && (
                                     <div className="grid gap-2">
                                         <Label htmlFor="reason">Reason for Leave</Label>
@@ -315,3 +313,5 @@ export default function AttendanceCalendar() {
         </Card>
     )
 }
+
+    

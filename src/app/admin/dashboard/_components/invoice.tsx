@@ -58,7 +58,7 @@ export default function Invoice({ details }: InvoiceProps) {
                     <div className="text-right">Amount</div>
                 </div>
                 <Separator className="my-2" />
-                <ScrollArea className="h-[200px] pr-4">
+                <ScrollArea className="h-[200px] pr-4 print:h-auto print:overflow-visible">
                   {items.map(item => (
                       <div key={item.product.id} className="grid grid-cols-6 gap-4 items-center mb-2">
                           <div className="col-span-2">{item.product.name} ({item.product.id})</div>
@@ -114,6 +114,10 @@ export default function Invoice({ details }: InvoiceProps) {
             box-shadow: none !important;
             border: none !important;
             padding: 0 !important;
+          }
+           #invoice-dialog [data-radix-scroll-area-viewport] {
+            height: auto !important;
+            overflow: visible !important;
           }
           #invoice-dialog .print-hidden {
             display: none;

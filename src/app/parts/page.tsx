@@ -24,7 +24,7 @@ export default function PartsPage() {
       <main className="flex-grow">
         <section className="relative h-[40vh] min-h-[300px] w-full bg-secondary">
             <Image
-                src="https://placehold.co/1920x1080.png"
+                src="https://images.unsplash.com/photo-1579274212942-834c38997384?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb3RvcmN5Y2xlJTIwcGFydHMlMjBzaGVsZnxlbnwwfHx8fDE3NTYxMTQwODR8MA&ixlib=rb-4.1.0&q=80&w=1080"
                 alt="Genuine bike parts on a shelf"
                 data-ai-hint="motorcycle parts shelf"
                 fill

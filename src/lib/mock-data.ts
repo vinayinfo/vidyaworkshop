@@ -1,3 +1,4 @@
+
 export interface Part {
     id: string;
     name: string;
@@ -17,12 +18,12 @@ export interface Booking {
 }
 
 export const mockParts: Part[] = [
-    { id: 'PART-001', name: 'Air Filter Assembly', mrp: 750.00, stock: 15, image: 'https://placehold.co/300x300.png', imageHint: 'air filter' },
-    { id: 'PART-002', name: 'Clutch Cable', mrp: 350.50, stock: 25, image: 'https://placehold.co/300x300.png', imageHint: 'clutch cable' },
-    { id: 'PART-003', name: 'Brake Pad Set - Front', mrp: 900.00, stock: 3, image: 'https://placehold.co/300x300.png', imageHint: 'brake pad' },
-    { id: 'PART-004', name: 'Engine Oil (1L)', mrp: 1200.00, stock: 50, image: 'https://placehold.co/300x300.png', imageHint: 'engine oil' },
-    { id: 'PART-005', name: 'Spark Plug', mrp: 250.00, stock: 40, image: 'https://placehold.co/300x300.png', imageHint: 'spark plug' },
-    { id: 'PART-006', name: 'Chain & Sprocket Kit', mrp: 3500.00, stock: 8, image: 'https://placehold.co/300x300.png', imageHint: 'chain sprocket' },
+    { id: 'PART-001', name: 'Air Filter Assembly', mrp: 750.00, stock: 15, image: 'https://images.unsplash.com/photo-1616237225529-67a423329d43?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb3RvcmN5Y2xlJTIwYWlyJTIwZmlsdGVyfGVufDB8fHx8MTc1NjExNDE0NHww&ixlib=rb-4.1.0&q=80&w=1080', imageHint: 'motorcycle air filter' },
+    { id: 'PART-002', name: 'Clutch Cable', mrp: 350.50, stock: 25, image: 'https://images.unsplash.com/photo-1600863001099-a6a1a153d605?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb3RvcmN5Y2xlJTIwY2x1dGNoJTIwY2FibGV8ZW58MHx8fHwxNzU2MTE0MTYxfDA&ixlib=rb-4.1.0&q=80&w=1080', imageHint: 'motorcycle clutch cable' },
+    { id: 'PART-003', name: 'Brake Pad Set - Front', mrp: 900.00, stock: 3, image: 'https://images.unsplash.com/photo-1609934449767-12b2a6081c5f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb3RvcmN5Y2xlJTIwYnJha2UlMjBwYWR8ZW58MHx8fHwxNzU2MTE0MTc2fDA&ixlib=rb-4.1.0&q=80&w=1080', imageHint: 'motorcycle brake pad' },
+    { id: 'PART-004', name: 'Engine Oil (1L)', mrp: 1200.00, stock: 50, image: 'https://images.unsplash.com/photo-1632386915228-9356d226a655?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb3RvcmN5Y2xlJTIwZW5naW5lJTIwb2lsfGVufDB8fHx8MTc1NjExNDE5Mnww&ixlib=rb-4.1.0&q=80&w=1080', imageHint: 'motorcycle engine oil' },
+    { id: 'PART-005', name: 'Spark Plug', mrp: 250.00, stock: 40, image: 'https://images.unsplash.com/photo-1622286392398-690a69365c71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb3RvcmN5Y2xlJTIwc3BhcmslMjBwbHVnfGVufDB8fHx8MTc1NjExNDIwN3ww&ixlib=rb-4.1.0&q=80&w=1080', imageHint: 'motorcycle spark plug' },
+    { id: 'PART-006', name: 'Chain & Sprocket Kit', mrp: 3500.00, stock: 8, image: 'https://images.unsplash.com/photo-1593356173010-85d1942a6c47?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb3RvcmN5Y2xlJTIwY2hhaW4lMjBzcHJvY2tldHxlbnwwfHx8fDE3NTYxMTQyMjB8MA&ixlib=rb-4.1.0&q=80&w=1080', imageHint: 'motorcycle chain sprocket' },
 ];
 
 export const mockBookings: Booking[] = [

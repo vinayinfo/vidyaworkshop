@@ -1,13 +1,10 @@
 
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { Card, CardContent } from "@/components/ui/card"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel"
 import Link from 'next/link';
 
@@ -32,7 +29,7 @@ const heroImages = [
 export default function Hero() {
   return (
     <section className="relative h-[60vh] min-h-[500px] w-full bg-background md:h-[80vh]">
-        <Carousel className="w-full h-full" opts={{ loop: true }}>
+        <Carousel className="w-full h-full absolute inset-0" opts={{ loop: true }}>
             <CarouselContent className="h-full">
                 {heroImages.map((image, index) => (
                     <CarouselItem key={index}>

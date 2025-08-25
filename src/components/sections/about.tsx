@@ -29,7 +29,7 @@ export default function About() {
               A Legacy of Trust & Two-Wheeler Passion
             </h2>
             <p className="text-muted-foreground">
-              Founded over a decade ago, Vidya Workshop started as a small garage with a big dream: to provide unparalleled service for Royal Enfield enthusiasts. Today, as VIDYA WORK SHOP, we carry forward that legacy, combining traditional craftsmanship with modern technology. Our 10-strong team of certified mechanics shares a deep passion for these iconic machines.
+              Founded over 25 years ago, Vidya Workshop started as a small garage with a big dream: to provide unparalleled service for Royal Enfield enthusiasts. Today, as VIDYA WORK SHOP, we carry forward that legacy, combining traditional craftsmanship with modern technology. Our 10-strong team of certified mechanics shares a deep passion for these iconic machines.
             </p>
             <div className="flex gap-8 pt-4">
               <div className="flex items-center gap-3">

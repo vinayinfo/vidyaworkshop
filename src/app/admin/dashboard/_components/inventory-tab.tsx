@@ -1,8 +1,8 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
-import { PlusCircle, Search, QrCode, ShoppingCart, X } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { PlusCircle, Search, QrCode, ShoppingCart, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,8 @@ import { Separator } from '@/components/ui/separator';
 type FormValues = Omit<Part, 'id'>;
 export type CartItem = { part: Part; quantity: number };
 
+const PARTS_PER_PAGE = 10;
+
 export default function InventoryTab() {
   const [parts, setParts] = useState<Part[]>(mockParts);
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,42 +29,53 @@ export default function InventoryTab() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [lastCartAction, setLastCartAction] = useState<{type: string, payload: any} | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const { toast } = useToast();
 
   useEffect(() => {
     if (!lastCartAction) return;
 
-    switch (lastCartAction.type) {
-      case 'ADD_SUCCESS':
-        toast({ title: "Added to cart", description: `${lastCartAction.payload.name} has been added to your cart.` });
-        break;
-      case 'UPDATE_SUCCESS':
-        toast({ title: "Added to cart", description: `${lastCartAction.payload.name} quantity updated.` });
-        break;
-      case 'STOCK_LIMIT':
-        toast({ variant: 'destructive', title: "Stock limit reached", description: `Cannot add more of ${lastCartAction.payload.name}.` });
-        break;
-      case 'NOT_ENOUGH_STOCK':
-        toast({ variant: 'destructive', title: "Not enough stock", description: `Only ${lastCartAction.payload.stock} units available.` });
-        break;
-      case 'QR_NOT_FOUND':
-         toast({
-            variant: 'destructive',
-            title: 'Invalid Part ID',
-            description: `Part with ID "${lastCartAction.payload.id}" not found in inventory.`,
-          });
-        break;
-    }
-    setLastCartAction(null); // Reset after showing toast
+    const showToast = () => {
+        switch (lastCartAction.type) {
+            case 'ADD_SUCCESS':
+                toast({ title: "Added to cart", description: `${lastCartaction.payload.name} has been added to your cart.` });
+                break;
+            case 'UPDATE_SUCCESS':
+                toast({ title: "Added to cart", description: `${lastCartAction.payload.name} quantity updated.` });
+                break;
+            case 'STOCK_LIMIT':
+                toast({ variant: 'destructive', title: "Stock limit reached", description: `Cannot add more of ${lastCartAction.payload.name}.` });
+                break;
+            case 'NOT_ENOUGH_STOCK':
+                toast({ variant: 'destructive', title: "Not enough stock", description: `Only ${lastCartAction.payload.stock} units available.` });
+                break;
+            case 'QR_NOT_FOUND':
+                toast({
+                    variant: 'destructive',
+                    title: 'Invalid Part ID',
+                    description: `Part with ID "${lastCartAction.payload.id}" not found in inventory.`,
+                });
+                break;
+        }
+    };
+    showToast();
+    setLastCartAction(null);
   }, [lastCartAction, toast]);
 
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormValues>();
 
-  const filteredParts = parts.filter(part =>
+  const filteredParts = useMemo(() => parts.filter(part =>
     part.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ), [parts, searchTerm]);
+
+  const totalPages = Math.ceil(filteredParts.length / PARTS_PER_PAGE);
+  const paginatedParts = filteredParts.slice((currentPage - 1) * PARTS_PER_PAGE, currentPage * PARTS_PER_PAGE);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   const onAddPartSubmit: SubmitHandler<FormValues> = (data) => {
     const newPart: Part = {
@@ -151,22 +164,22 @@ export default function InventoryTab() {
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        <Card className="lg:col-span-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+        <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle>Parts Inventory</CardTitle>
-            <div className="flex justify-between items-center pt-4 gap-2">
+            <div className="flex flex-col md:flex-row justify-between items-center pt-4 gap-2">
               <div className="relative w-full max-w-sm">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Search parts..."
+                  placeholder="Search parts by name..."
                   className="pl-8"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 mt-2 md:mt-0">
                   <Button variant="outline" onClick={() => setIsQrScannerOpen(true)}>
                     <QrCode className="mr-2 h-4 w-4" /> Scan
                   </Button>
@@ -204,34 +217,61 @@ export default function InventoryTab() {
             </div>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Part Name</TableHead>
-                  <TableHead>Part ID</TableHead>
-                  <TableHead>Stock</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredParts.map(part => (
-                  <TableRow key={part.id}>
-                    <TableCell className="font-medium">{part.name}</TableCell>
-                    <TableCell>{part.id}</TableCell>
-                    <TableCell>{part.stock}</TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="outline" size="sm" onClick={() => handleAddToCart(part)} disabled={part.stock === 0}>
-                        Add to Cart
-                      </Button>
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Part Name</TableHead>
+                    <TableHead>Part ID</TableHead>
+                    <TableHead>Stock</TableHead>
+                    <TableHead className="text-right">Action</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {paginatedParts.map(part => (
+                    <TableRow key={part.id}>
+                      <TableCell className="font-medium">{part.name}</TableCell>
+                      <TableCell>{part.id}</TableCell>
+                      <TableCell>{part.stock}</TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="outline" size="sm" onClick={() => handleAddToCart(part)} disabled={part.stock === 0}>
+                          Add to Cart
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+             <div className="flex items-center justify-between mt-4">
+                <span className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages}
+                </span>
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                        Previous
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                    >
+                        Next
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
+                </div>
+            </div>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="md:col-span-1">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <ShoppingCart className="h-5 w-5" />
@@ -304,5 +344,3 @@ export default function InventoryTab() {
     </>
   );
 }
-
-    

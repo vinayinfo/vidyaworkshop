@@ -23,7 +23,7 @@ interface InvoiceProps {
 
 export default function Invoice({ details }: InvoiceProps) {
   const { items, discount, customerName, customerContact, subtotal, totalAmount, invoiceId, invoiceDate } = details;
-  const totalMrp = items.reduce((acc, item) => acc + item.part.mrp * item.quantity, 0);
+  const totalMrp = items.reduce((acc, item) => acc + item.product.mrp * item.quantity, 0);
   const totalSavings = totalMrp - subtotal;
   
   return (
@@ -60,12 +60,12 @@ export default function Invoice({ details }: InvoiceProps) {
                 <Separator className="my-2" />
                 <ScrollArea className="h-[200px] pr-4">
                   {items.map(item => (
-                      <div key={item.part.id} className="grid grid-cols-6 gap-4 items-center mb-2">
-                          <div className="col-span-2">{item.part.name} ({item.part.id})</div>
+                      <div key={item.product.id} className="grid grid-cols-6 gap-4 items-center mb-2">
+                          <div className="col-span-2">{item.product.name} ({item.product.id})</div>
                           <div className="text-center">{item.quantity}</div>
-                          <div className="text-right line-through text-muted-foreground">₹{item.part.mrp.toFixed(2)}</div>
-                          <div className="text-right">₹{item.part.sellingPrice.toFixed(2)}</div>
-                          <div className="text-right">₹{(item.part.sellingPrice * item.quantity).toFixed(2)}</div>
+                          <div className="text-right line-through text-muted-foreground">₹{item.product.mrp.toFixed(2)}</div>
+                          <div className="text-right">₹{item.product.sellingPrice.toFixed(2)}</div>
+                          <div className="text-right">₹{(item.product.sellingPrice * item.quantity).toFixed(2)}</div>
                       </div>
                   ))}
                 </ScrollArea>
@@ -122,7 +122,7 @@ export default function Invoice({ details }: InvoiceProps) {
              box-shadow: none;
              border: none;
           }
-          .h-\[90vh\] {
+          .h-\\[90vh\\] {
             height: auto !important;
           }
         }

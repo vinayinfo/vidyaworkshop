@@ -9,22 +9,23 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { mockParts, Part } from '@/lib/mock-data';
+import { mockProducts, Product } from '@/lib/mock-data';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import SellPartDialog from './sell-part-dialog';
 import QrScannerDialog from './qr-scanner-dialog';
 import { Separator } from '@/components/ui/separator';
 
-type FormValues = Omit<Part, 'id'>;
-export type CartItem = { part: Part; quantity: number };
+type FormValues = Omit<Product, 'id'>;
+export type CartItem = { product: Product; quantity: number };
 
-const PARTS_PER_PAGE = 10;
+const PRODUCTS_PER_PAGE = 10;
 
 export default function InventoryTab() {
-  const [parts, setParts] = useState<Part[]>(mockParts);
+  const [products, setProducts] = useState<Product[]>(mockProducts);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isAddPartDialogOpen, setIsAddPartDialogOpen] = useState(false);
+  const [isAddProductDialogOpen, setIsAddProductDialogOpen] = useState(false);
   const [isQrScannerOpen, setIsQrScannerOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -55,8 +56,8 @@ export default function InventoryTab() {
             case 'QR_NOT_FOUND':
                 toast({
                     variant: 'destructive',
-                    title: 'Invalid Part ID',
-                    description: `Part with ID "${lastCartAction.payload.id}" not found in inventory.`,
+                    title: 'Invalid Product ID',
+                    description: `Product with ID "${lastCartAction.payload.id}" not found in inventory.`,
                 });
                 break;
         }
@@ -67,101 +68,101 @@ export default function InventoryTab() {
   }, [lastCartAction]);
 
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<FormValues>();
+  const { register, handleSubmit, reset, control, formState: { errors } } = useForm<FormValues>();
 
-  const filteredParts = useMemo(() => parts.filter(part =>
-    part.name.toLowerCase().includes(searchTerm.toLowerCase())
-  ), [parts, searchTerm]);
+  const filteredProducts = useMemo(() => products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  ), [products, searchTerm]);
 
-  const totalPages = Math.ceil(filteredParts.length / PARTS_PER_PAGE);
-  const paginatedParts = filteredParts.slice((currentPage - 1) * PARTS_PER_PAGE, currentPage * PARTS_PER_PAGE);
+  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
+  const paginatedProducts = filteredProducts.slice((currentPage - 1) * PRODUCTS_PER_PAGE, currentPage * PRODUCTS_PER_PAGE);
 
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
 
-  const onAddPartSubmit: SubmitHandler<FormValues> = (data) => {
-    const newPart: Part = {
-      id: `PART-${Date.now()}`,
+  const onAddProductSubmit: SubmitHandler<FormValues> = (data) => {
+    const newProduct: Product = {
+      id: `${data.category.toUpperCase()}-${Date.now()}`,
       ...data,
       mrp: Number(data.mrp),
       sellingPrice: Number(data.sellingPrice),
       stock: Number(data.stock),
       image: 'https://placehold.co/400x400.png',
-      imageHint: 'new part'
+      imageHint: 'new product'
     };
-    setParts(prevParts => [newPart, ...prevParts]);
+    setProducts(prevProducts => [newProduct, ...prevProducts]);
     toast({
-      title: 'Part Added',
+      title: 'Product Added',
       description: `${data.name} has been added to the inventory.`,
     });
     reset();
-    setIsAddPartDialogOpen(false);
+    setIsAddProductDialogOpen(false);
   };
   
-  const handleQrScan = (partId: string) => {
+  const handleQrScan = (productId: string) => {
     setIsQrScannerOpen(false);
-    const part = parts.find(p => p.id === partId);
-    if (part) {
-      handleAddToCart(part);
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      handleAddToCart(product);
     } else {
-      setLastCartAction({ type: 'QR_NOT_FOUND', payload: { id: partId } });
+      setLastCartAction({ type: 'QR_NOT_FOUND', payload: { id: productId } });
     }
   };
 
-  const handleAddToCart = (part: Part) => {
+  const handleAddToCart = (product: Product) => {
     setCart(currentCart => {
-      const existingItem = currentCart.find(item => item.part.id === part.id);
+      const existingItem = currentCart.find(item => item.product.id === product.id);
       if (existingItem) {
-        if(existingItem.quantity < part.stock) {
-          setLastCartAction({ type: 'UPDATE_SUCCESS', payload: { name: part.name } });
+        if(existingItem.quantity < product.stock) {
+          setLastCartAction({ type: 'UPDATE_SUCCESS', payload: { name: product.name } });
           return currentCart.map(item =>
-            item.part.id === part.id ? { ...item, quantity: item.quantity + 1 } : item
+            item.product.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
           );
         } else {
-           setLastCartAction({ type: 'STOCK_LIMIT', payload: { name: part.name } });
+           setLastCartAction({ type: 'STOCK_LIMIT', payload: { name: product.name } });
            return currentCart;
         }
       }
-      setLastCartAction({ type: 'ADD_SUCCESS', payload: { name: part.name } });
-      return [...currentCart, { part, quantity: 1 }];
+      setLastCartAction({ type: 'ADD_SUCCESS', payload: { name: product.name } });
+      return [...currentCart, { product, quantity: 1 }];
     });
   };
 
-  const updateCartQuantity = (partId: string, quantity: number) => {
+  const updateCartQuantity = (productId: string, quantity: number) => {
     setCart(currentCart => {
-       const item = currentCart.find(item => item.part.id === partId);
+       const item = currentCart.find(item => item.product.id === productId);
        if (!item) return currentCart;
 
-       if (quantity > item.part.stock) {
-          setLastCartAction({type: 'NOT_ENOUGH_STOCK', payload: {stock: item.part.stock}});
-          return currentCart.map(i => i.part.id === partId ? { ...i, quantity: i.part.stock } : i);
+       if (quantity > item.product.stock) {
+          setLastCartAction({type: 'NOT_ENOUGH_STOCK', payload: {stock: item.product.stock}});
+          return currentCart.map(i => i.product.id === productId ? { ...i, quantity: i.product.stock } : i);
        }
        
        if (quantity <= 0) {
-         return currentCart.filter(item => item.part.id !== partId);
+         return currentCart.filter(item => item.product.id !== productId);
        }
 
        return currentCart.map(item =>
-         item.part.id === partId ? { ...item, quantity } : item
+         item.product.id === productId ? { ...item, quantity } : item
        );
     })
   }
 
-  const removeFromCart = (partId: string) => {
-    setCart(currentCart => currentCart.filter(item => item.part.id !== partId));
+  const removeFromCart = (productId: string) => {
+    setCart(currentCart => currentCart.filter(item => item.product.id !== productId));
   }
 
-  const cartTotal = cart.reduce((total, item) => total + item.part.sellingPrice * item.quantity, 0);
+  const cartTotal = cart.reduce((total, item) => total + item.product.sellingPrice * item.quantity, 0);
 
   const handleSaleComplete = (soldItems: CartItem[]) => {
-    setParts(currentParts => {
-      return currentParts.map(part => {
-        const soldItem = soldItems.find(item => item.part.id === part.id);
+    setProducts(currentProducts => {
+      return currentProducts.map(product => {
+        const soldItem = soldItems.find(item => item.product.id === product.id);
         if (soldItem) {
-          return { ...part, stock: part.stock - soldItem.quantity };
+          return { ...product, stock: product.stock - soldItem.quantity };
         }
-        return part;
+        return product;
       });
     });
     setCart([]); // Clear cart
@@ -173,13 +174,13 @@ export default function InventoryTab() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle>Parts Inventory</CardTitle>
+            <CardTitle>Product Inventory</CardTitle>
             <div className="flex flex-col md:flex-row justify-between items-center pt-4 gap-2">
               <div className="relative w-full max-w-sm">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Search parts by name..."
+                  placeholder="Search products by name..."
                   className="pl-8"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -189,21 +190,41 @@ export default function InventoryTab() {
                   <Button variant="outline" onClick={() => setIsQrScannerOpen(true)}>
                     <QrCode className="mr-2 h-4 w-4" /> Scan
                   </Button>
-                  <Dialog open={isAddPartDialogOpen} onOpenChange={setIsAddPartDialogOpen}>
+                  <Dialog open={isAddProductDialogOpen} onOpenChange={setIsAddProductDialogOpen}>
                     <DialogTrigger asChild>
                       <Button>
-                        <PlusCircle className="mr-2 h-4 w-4" /> Add Part
+                        <PlusCircle className="mr-2 h-4 w-4" /> Add Product
                       </Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>Add New Part</DialogTitle>
+                        <DialogTitle>Add New Product</DialogTitle>
                       </DialogHeader>
-                      <form onSubmit={handleSubmit(onAddPartSubmit)} className="grid gap-4 py-4">
+                      <form onSubmit={handleSubmit(onAddProductSubmit)} className="grid gap-4 py-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="name">Part Name</Label>
+                            <Label htmlFor="name">Product Name</Label>
                             <Input id="name" {...register("name", { required: "Name is required" })} />
                             {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>Category</Label>
+                            <Controller
+                                name="category"
+                                control={control}
+                                rules={{ required: 'Category is required' }}
+                                render={({ field }) => (
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a category" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Part">Part</SelectItem>
+                                            <SelectItem value="Accessory">Accessory</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+                             {errors.category && <p className="text-xs text-destructive">{errors.category.message}</p>}
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                           <div className="grid gap-2">
@@ -222,7 +243,7 @@ export default function InventoryTab() {
                             <Input id="stock" type="number" {...register("stock", { required: "Stock is required", min: 0 })} />
                             {errors.stock && <p className="text-xs text-destructive">{errors.stock.message}</p>}
                         </div>
-                        <Button type="submit">Save Part</Button>
+                        <Button type="submit">Save Product</Button>
                       </form>
                     </DialogContent>
                   </Dialog>
@@ -234,27 +255,29 @@ export default function InventoryTab() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Part Name</TableHead>
-                    <TableHead>Part ID</TableHead>
+                    <TableHead>Product Name</TableHead>
+                    <TableHead>Product ID</TableHead>
+                    <TableHead>Category</TableHead>
                     <TableHead>Price (MRP/Sell)</TableHead>
                     <TableHead>Stock</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedParts.map(part => (
-                    <TableRow key={part.id}>
-                      <TableCell className="font-medium">{part.name}</TableCell>
-                      <TableCell>{part.id}</TableCell>
+                  {paginatedProducts.map(product => (
+                    <TableRow key={product.id}>
+                      <TableCell className="font-medium">{product.name}</TableCell>
+                      <TableCell>{product.id}</TableCell>
+                      <TableCell>{product.category}</TableCell>
                       <TableCell>
                         <div className="flex flex-col">
-                            <span className="line-through text-muted-foreground">₹{part.mrp.toFixed(2)}</span>
-                            <span className="font-medium">₹{part.sellingPrice.toFixed(2)}</span>
+                            <span className="line-through text-muted-foreground">₹{product.mrp.toFixed(2)}</span>
+                            <span className="font-medium">₹{product.sellingPrice.toFixed(2)}</span>
                         </div>
                       </TableCell>
-                      <TableCell>{part.stock}</TableCell>
+                      <TableCell>{product.stock}</TableCell>
                       <TableCell className="text-right">
-                        <Button variant="outline" size="sm" onClick={() => handleAddToCart(part)} disabled={part.stock === 0}>
+                        <Button variant="outline" size="sm" onClick={() => handleAddToCart(product)} disabled={product.stock === 0}>
                           Add to Cart
                         </Button>
                       </TableCell>
@@ -303,21 +326,21 @@ export default function InventoryTab() {
                     <div className="flex flex-col h-full">
                         <div className="flex-grow space-y-4">
                             {cart.map(item => (
-                                <div key={item.part.id} className="flex flex-wrap justify-between items-center gap-y-2">
+                                <div key={item.product.id} className="flex flex-wrap justify-between items-center gap-y-2">
                                     <div className="flex-grow pr-4">
-                                        <p className="font-medium">{item.part.name}</p>
-                                        <p className="text-sm text-muted-foreground">₹{item.part.sellingPrice.toFixed(2)}</p>
+                                        <p className="font-medium">{item.product.name}</p>
+                                        <p className="text-sm text-muted-foreground">₹{item.product.sellingPrice.toFixed(2)}</p>
                                     </div>
                                     <div className="flex items-center gap-2 flex-shrink-0">
                                         <Input 
                                             type="number" 
                                             className="w-16 h-8"
                                             value={item.quantity}
-                                            onChange={(e) => updateCartQuantity(item.part.id, parseInt(e.target.value) || 0)}
+                                            onChange={(e) => updateCartQuantity(item.product.id, parseInt(e.target.value) || 0)}
                                             min="1"
-                                            max={item.part.stock}
+                                            max={item.product.stock}
                                         />
-                                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeFromCart(item.part.id)}>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeFromCart(item.product.id)}>
                                             <X className="h-4 w-4" />
                                         </Button>
                                     </div>
@@ -339,7 +362,7 @@ export default function InventoryTab() {
                     <div className="text-center py-10 text-muted-foreground">
                         <ShoppingCart className="mx-auto h-12 w-12" />
                         <p className="mt-4">Your cart is empty</p>
-                        <p className="text-sm">Add parts from the inventory to start a sale.</p>
+                        <p className="text-sm">Add products from the inventory to start a sale.</p>
                     </div>
                 )}
             </CardContent>

@@ -1,3 +1,4 @@
+
 "use client";
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -6,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InventoryTab from './_components/inventory-tab';
 import BookingsTab from './_components/bookings-tab';
-import { mockParts } from '@/lib/mock-data';
+import { mockProducts } from '@/lib/mock-data';
 
 export default function Dashboard() {
     const router = useRouter();
@@ -18,8 +19,8 @@ export default function Dashboard() {
         }
     }, [router]);
   
-  const totalStock = mockParts.reduce((sum, part) => sum + part.stock, 0);
-  const lowStockItems = mockParts.filter(part => part.stock < 5).length;
+  const totalStock = mockProducts.reduce((sum, product) => sum + product.stock, 0);
+  const lowStockItems = mockProducts.filter(product => product.stock < 5).length;
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 bg-secondary/40">
@@ -61,7 +62,7 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent>
                 <div className="text-2xl font-bold">{totalStock}</div>
-                <p className="text-xs text-muted-foreground">Total parts in inventory</p>
+                <p className="text-xs text-muted-foreground">Total products in inventory</p>
                 </CardContent>
             </Card>
              <Card>

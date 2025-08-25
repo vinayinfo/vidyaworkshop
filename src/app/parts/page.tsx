@@ -9,13 +9,13 @@ import { Badge } from '@/components/ui/badge';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import { Input } from '@/components/ui/input';
-import { mockParts } from '@/lib/mock-data';
+import { mockProducts } from '@/lib/mock-data';
 
-export default function PartsPage() {
+export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredParts = mockParts.filter(part =>
-    part.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProducts = mockProducts.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -33,9 +33,9 @@ export default function PartsPage() {
             />
              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
              <div className="container relative mx-auto flex h-full flex-col items-center justify-center px-4 text-center">
-                <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">Genuine Spare Parts</h1>
+                <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">Genuine Parts & Accessories</h1>
                 <p className="mt-4 max-w-2xl text-lg text-gray-200">
-                    Find the right genuine parts for your Bullet bike. We ensure quality and authenticity for peak performance.
+                    Find the right genuine parts and accessories for your Bullet bike. We ensure quality and authenticity for peak performance.
                 </p>
              </div>
         </section>
@@ -47,7 +47,7 @@ export default function PartsPage() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                         <Input
                             type="search"
-                            placeholder="Search for parts..."
+                            placeholder="Search for products..."
                             className="w-full rounded-full pl-10 pr-4 py-2 text-lg"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -55,16 +55,16 @@ export default function PartsPage() {
                     </div>
                 </div>
 
-                {filteredParts.length > 0 ? (
+                {filteredProducts.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        {filteredParts.map(part => {
-                            const discount = ((part.mrp - part.sellingPrice) / part.mrp) * 100;
+                        {filteredProducts.map(product => {
+                            const discount = ((product.mrp - product.sellingPrice) / product.mrp) * 100;
                             return (
-                                <Card key={part.id} className="relative aspect-square w-full overflow-hidden rounded-lg group">
+                                <Card key={product.id} className="relative aspect-square w-full overflow-hidden rounded-lg group">
                                     <Image
-                                        src={part.image}
-                                        alt={part.name}
-                                        data-ai-hint={part.imageHint}
+                                        src={product.image}
+                                        alt={product.name}
+                                        data-ai-hint={product.imageHint}
                                         fill
                                         className="object-cover transition-transform duration-300 group-hover:scale-110"
                                     />
@@ -73,16 +73,16 @@ export default function PartsPage() {
                                         <Badge variant="destructive" className="absolute top-2 right-2">{discount.toFixed(0)}% OFF</Badge>
                                     )}
                                     <CardContent className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                                        <h3 className="font-semibold text-lg truncate">{part.name}</h3>
-                                        <p className="text-sm text-gray-300">{part.id}</p>
+                                        <h3 className="font-semibold text-lg truncate">{product.name}</h3>
+                                        <p className="text-sm text-gray-300">{product.id}</p>
                                         <div className="flex justify-between items-end mt-2">
                                             <div className="flex items-baseline gap-2">
-                                                <p className="font-bold text-xl">₹{part.sellingPrice.toFixed(2)}</p>
-                                                {part.sellingPrice < part.mrp && (
-                                                  <p className="text-sm text-gray-400 line-through">₹{part.mrp.toFixed(2)}</p>
+                                                <p className="font-bold text-xl">₹{product.sellingPrice.toFixed(2)}</p>
+                                                {product.sellingPrice < product.mrp && (
+                                                  <p className="text-sm text-gray-400 line-through">₹{product.mrp.toFixed(2)}</p>
                                                 )}
                                             </div>
-                                            {part.stock > 0 ? (
+                                            {product.stock > 0 ? (
                                                 <Badge variant="secondary">In Stock</Badge>
                                             ) : (
                                                 <Badge variant="destructive">Out of Stock</Badge>
@@ -95,7 +95,7 @@ export default function PartsPage() {
                     </div>
                 ) : (
                     <div className="text-center py-16">
-                        <p className="text-xl text-muted-foreground">No parts found for "{searchTerm}".</p>
+                        <p className="text-xl text-muted-foreground">No products found for "{searchTerm}".</p>
                     </div>
                 )}
             </div>

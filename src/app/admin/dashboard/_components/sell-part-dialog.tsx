@@ -42,7 +42,7 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
   const { toast } = useToast();
   const [invoiceDetails, setInvoiceDetails] = useState<InvoiceDetails | null>(null);
 
-  const subtotal = cart.reduce((acc, item) => acc + (item.part.sellingPrice * item.quantity), 0);
+  const subtotal = cart.reduce((acc, item) => acc + (item.product.sellingPrice * item.quantity), 0);
   const discount = watch('discount') || 0;
   const totalAmount = subtotal * (1 - discount / 100);
 
@@ -109,9 +109,9 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
             <h4 className="font-medium mb-2">Order Summary</h4>
             <div className="space-y-1 text-sm">
               {cart.map(item => (
-                <div key={item.part.id} className="flex justify-between">
-                  <span>{item.part.name} x {item.quantity}</span>
-                  <span>₹{(item.part.sellingPrice * item.quantity).toFixed(2)}</span>
+                <div key={item.product.id} className="flex justify-between">
+                  <span>{item.product.name} x {item.quantity}</span>
+                  <span>₹{(item.product.sellingPrice * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
             </div>

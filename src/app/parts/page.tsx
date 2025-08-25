@@ -58,23 +58,22 @@ export default function PartsPage() {
                 {filteredParts.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {filteredParts.map(part => (
-                            <Card key={part.id} className="overflow-hidden transition-shadow duration-300 hover:shadow-xl">
-                                <div className="relative aspect-square w-full">
-                                    <Image
-                                        src={part.image}
-                                        alt={part.name}
-                                        data-ai-hint={part.imageHint}
-                                        fill
-                                        className="object-cover"
-                                    />
-                                </div>
-                                <CardContent className="p-4">
+                            <Card key={part.id} className="relative aspect-square w-full overflow-hidden rounded-lg group">
+                                <Image
+                                    src={part.image}
+                                    alt={part.name}
+                                    data-ai-hint={part.imageHint}
+                                    fill
+                                    className="object-cover transition-transform duration-300 group-hover:scale-110"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                                <CardContent className="absolute bottom-0 left-0 right-0 p-4 text-white">
                                     <h3 className="font-semibold text-lg truncate">{part.name}</h3>
-                                    <p className="text-sm text-muted-foreground">{part.id}</p>
-                                    <div className="flex justify-between items-center mt-4">
-                                        <p className="font-bold text-lg">₹{part.mrp.toFixed(2)}</p>
+                                    <p className="text-sm text-gray-300">{part.id}</p>
+                                    <div className="flex justify-between items-end mt-2">
+                                        <p className="font-bold text-xl">₹{part.mrp.toFixed(2)}</p>
                                         {part.stock > 0 ? (
-                                            <Badge variant="default">In Stock</Badge>
+                                            <Badge variant="secondary">In Stock</Badge>
                                         ) : (
                                             <Badge variant="destructive">Out of Stock</Badge>
                                         )}

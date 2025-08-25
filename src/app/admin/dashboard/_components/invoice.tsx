@@ -58,7 +58,7 @@ export default function Invoice({ details }: InvoiceProps) {
                     <div className="text-right">Amount</div>
                 </div>
                 <Separator className="my-2" />
-                <ScrollArea className="h-[200px] print:h-auto print:overflow-visible">
+                <ScrollArea className="h-[200px] print:h-auto print:overflow-visible" id="invoice-items-scroll-area">
                   {items.map(item => (
                       <div key={item.product.id} className="grid grid-cols-6 gap-4 items-center mb-2">
                           <div className="col-span-2">{item.product.name} ({item.product.id})</div>
@@ -102,38 +102,29 @@ export default function Invoice({ details }: InvoiceProps) {
       </CardFooter>
       <style jsx global>{`
         @media print {
-          body {
-            background-color: #fff;
+          body * {
+            visibility: hidden;
           }
-          body > *:not(#invoice-dialog *) {
-            display: none !important;
+          #invoice-dialog, #invoice-dialog * {
+            visibility: visible;
           }
-          #invoice-dialog,
-          #invoice-dialog [role="dialog"],
-          #invoice-dialog > div,
-          #invoice-content {
-            display: block !important;
-            position: relative !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            height: auto !important;
-            box-shadow: none !important;
-            border: none !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            background-color: #fff !important;
-            color: #000 !important;
+          #invoice-dialog {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: auto;
+            box-shadow: none;
+            border: none;
           }
-           #invoice-dialog [data-radix-scroll-area-viewport] {
-            height: auto !important;
-            overflow: visible !important;
-          }
-          .print-hidden {
-            display: none !important;
-          }
-          .h-\\[90vh\\] {
-            height: auto !important;
-          }
+           #invoice-dialog .print-hidden {
+             display: none;
+           }
+           #invoice-items-scroll-area, 
+           #invoice-items-scroll-area > div {
+             height: auto !important;
+             overflow: visible !important;
+           }
         }
       `}</style>
     </Card>

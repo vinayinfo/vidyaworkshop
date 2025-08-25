@@ -36,10 +36,12 @@ export default function InventoryTab() {
   useEffect(() => {
     if (!lastCartAction) return;
 
+    let toastId: string | undefined;
+
     const showToast = () => {
         switch (lastCartAction.type) {
             case 'ADD_SUCCESS':
-                toast({ title: "Added to cart", description: `${lastCartaction.payload.name} has been added to your cart.` });
+                toast({ title: "Added to cart", description: `${lastCartAction.payload.name} has been added to your cart.` });
                 break;
             case 'UPDATE_SUCCESS':
                 toast({ title: "Added to cart", description: `${lastCartAction.payload.name} quantity updated.` });
@@ -61,7 +63,8 @@ export default function InventoryTab() {
     };
     showToast();
     setLastCartAction(null);
-  }, [lastCartAction, toast]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastCartAction]);
 
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormValues>();
@@ -283,17 +286,17 @@ export default function InventoryTab() {
                     <div className="flex flex-col h-full">
                         <div className="flex-grow space-y-4">
                             {cart.map(item => (
-                                <div key={item.part.id} className="flex justify-between items-center">
-                                    <div>
+                                <div key={item.part.id} className="flex flex-wrap justify-between items-center gap-y-2">
+                                    <div className="flex-grow pr-4">
                                         <p className="font-medium">{item.part.name}</p>
                                         <p className="text-sm text-muted-foreground">₹{item.part.mrp.toFixed(2)}</p>
                                     </div>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2 flex-shrink-0">
                                         <Input 
                                             type="number" 
                                             className="w-16 h-8"
                                             value={item.quantity}
-                                            onChange={(e) => updateCartQuantity(item.part.id, parseInt(e.target.value))}
+                                            onChange={(e) => updateCartQuantity(item.part.id, parseInt(e.target.value) || 0)}
                                             min="1"
                                             max={item.part.stock}
                                         />
@@ -344,3 +347,5 @@ export default function InventoryTab() {
     </>
   );
 }
+
+    

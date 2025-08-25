@@ -70,14 +70,17 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
   const handlePrint = () => {
     const invoiceContent = document.getElementById('invoice-content');
     if (invoiceContent) {
-      const printWindow = window.open('', '', 'height=600,width=800');
+      const printWindow = window.open('', '', 'height=800,width=800');
       if (printWindow) {
         printWindow.document.write('<html><head><title>Print Invoice</title>');
-        // We can inject basic styling for the print view
         printWindow.document.write(`
           <style>
+            @media print {
+              @page { size: auto; margin: 0.5in; }
+              body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            }
             body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.5; }
-            .invoice-card { max-width: 800px; margin: 20px auto; border: 1px solid #e2e8f0; border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); }
+            .invoice-card { max-width: 800px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 0.5rem; }
             .p-6 { padding: 1.5rem; }
             .text-2xl { font-size: 1.5rem; line-height: 2rem; }
             .font-bold { font-weight: 700; }
@@ -87,15 +90,16 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
             .justify-between { justify-content: space-between; }
             .items-start { align-items: flex-start; }
             .items-center { align-items: center; }
+            .text-left { text-align: left; }
             .text-right { text-align: right; }
             .mt-4 { margin-top: 1rem; }
             .mb-2 { margin-bottom: 0.5rem; }
             .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
             .font-semibold { font-weight: 600; }
             .my-6 { margin-top: 1.5rem; margin-bottom: 1.5rem; }
-            hr { border-top: 1px solid #e2e8f0; }
+            hr, .separator { border-top: 1px solid #e2e8f0; }
             .grid { display: grid; }
-            .grid-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+            .grid-cols-6 { grid-template-columns: 2.5fr 0.5fr 1fr 1fr 1fr; }
             .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
             .gap-4 { gap: 1rem; }
             .col-span-2 { grid-column: span 2 / span 2; }
@@ -109,17 +113,18 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
             .text-green-600 { color: #16a34a; }
             .text-xs { font-size: 0.75rem; line-height: 1rem; }
             .text-center { text-align: center; }
-            @media (min-width: 640px) {
-              .sm\\:flex-row { flex-direction: row; }
-              .sm\\:items-center { align-items: center; }
-              .sm\\:text-right { text-align: right; }
-              .sm\\:mt-0 { margin-top: 0px; }
-              .sm\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            }
+            .min-w-\\[500px\\] > div { page-break-inside: avoid; }
+            .min-w-\\[500px\\] > div.grid { page-break-inside: auto; }
+            #invoice-items-scroll-area { height: auto !important; overflow: visible !important; }
+            .sm\\:flex-row { flex-direction: row; }
+            .sm\\:items-center { align-items: center; }
+            .sm\\:text-right { text-align: right; }
+            .sm\\:mt-0 { margin-top: 0px; }
+            .sm\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
           </style>
         `);
         printWindow.document.write('</head><body>');
-        printWindow.document.write(invoiceContent.innerHTML);
+        printWindow.document.write(invoiceContent.innerHTML.replace('<div data-radix-scroll-area-viewport=""','<div data-radix-scroll-area-viewport="" style="height: auto !important; overflow: visible !important;"'));
         printWindow.document.write('</body></html>');
         printWindow.document.close();
         printWindow.focus();

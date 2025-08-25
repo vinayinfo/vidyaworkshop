@@ -1,8 +1,7 @@
 
 "use client";
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Wrench, ChevronsRight, Paintbrush, Cog, Bolt, Anchor, CircleDotDashed } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -10,7 +9,7 @@ import Link from 'next/link';
 const serviceCategories = [
   {
     title: 'General Service',
-    icon: <Wrench className="h-6 w-6 text-primary" />,
+    icon: <Wrench className="h-8 w-8 text-primary" />,
     services: [
       { name: 'Basic Service', description: 'Includes oil change, thorough cleaning, and a comprehensive brake check to ensure safety.' },
       { name: 'Premium Service', description: 'A full-vehicle inspection combined with an engine tune-up for optimal performance.' },
@@ -19,7 +18,7 @@ const serviceCategories = [
   },
   {
     title: 'Engine & Transmission',
-    icon: <Cog className="h-6 w-6 text-primary" />,
+    icon: <Cog className="h-8 w-8 text-primary" />,
     services: [
       { name: 'Engine Overhaul', description: 'Complete engine rebuild and restoration to factory specifications for peak power.' },
       { name: 'Clutch & Gearbox Repair', description: 'Expert repair and replacement for clutch assemblies and gearbox components.' },
@@ -28,17 +27,17 @@ const serviceCategories = [
   },
   {
     title: 'Electrical & Wiring',
-    icon: <Bolt className="h-6 w-6 text-primary" />,
+    icon: <Bolt className="h-8 w-8 text-primary" />,
     services: [
       { name: 'Battery Replacement', description: 'Testing and replacement with high-quality, long-lasting batteries.' },
       { name: 'Wiring Check & Repair', description: 'Comprehensive diagnosis and repair of all electrical wiring and components.' },
-      { name: 'Headlight/Tail-light Replacement', description: 'Installation and alignment of lighting systems for maximum visibility.' },
+      { name: 'Lighting Replacement', description: 'Installation and alignment of lighting systems for maximum visibility.' },
       { name: 'Ignition Repair', description: 'Troubleshooting and repair of ignition systems for reliable starting.' },
     ],
   },
   {
     title: 'Brakes & Suspension',
-    icon: <Anchor className="h-6 w-6 text-primary" />,
+    icon: <Anchor className="h-8 w-8 text-primary" />,
     services: [
       { name: 'Brake Pad Replacement', description: 'High-quality brake pad installation for reliable and safe stopping power.' },
       { name: 'Brake Disc Replacement', description: 'Inspection and replacement of brake discs for optimal braking performance.' },
@@ -48,20 +47,20 @@ const serviceCategories = [
   },
    {
     title: 'Tyres & Wheels',
-    icon: <CircleDotDashed className="h-6 w-6 text-primary" />,
+    icon: <CircleDotDashed className="h-8 w-8 text-primary" />,
     services: [
       { name: 'Tyre Replacement', description: 'Wide range of quality tyres with professional fitting services.' },
       { name: 'Tube Replacement', description: 'Quick and reliable puncture repair and tube replacement.' },
-      { name: 'Wheel Balancing & Alignment', description: 'Precision wheel balancing and alignment to eliminate vibrations and ensure a smooth ride.' },
+      { name: 'Wheel Balancing & Alignment', description: 'Precision wheel balancing and alignment for a smooth ride.' },
     ],
   },
   {
     title: 'Customization & Accessories',
-    icon: <Paintbrush className="h-6 w-6 text-primary" />,
+    icon: <Paintbrush className="h-8 w-8 text-primary" />,
     services: [
       { name: 'Exhaust Modification', description: 'Custom exhaust solutions for improved performance and a unique sound.' },
       { name: 'Seat Customization', description: 'Tailor-made seats for enhanced comfort and style on long rides.' },
-      { name: 'Paint/Decals', description: 'Custom paint jobs and decal application to make your bike truly yours.' },
+      { name: 'Paint & Decals', description: 'Custom paint jobs and decal application to make your bike truly yours.' },
       { name: 'Handlebar/Grip Upgrade', description: 'Ergonomic and stylish handlebar and grip options for better control.' },
     ],
   },
@@ -79,30 +78,32 @@ export default function Services() {
             We offer a complete range of services to cater to every need of your Bullet bike, from routine maintenance to full-custom builds.
           </p>
         </div>
-        <div className="mt-12 max-w-4xl mx-auto">
-          <Accordion type="single" collapsible className="w-full">
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {serviceCategories.map((category) => (
-              <AccordionItem value={category.title} key={category.title}>
-                <AccordionTrigger className="text-xl font-semibold hover:no-underline">
-                  <div className="flex items-center gap-4">
-                    {category.icon}
-                    {category.title}
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <ul className="space-y-4 pt-2 pl-4">
+              <Card key={category.title} className="flex flex-col">
+                <CardHeader>
+                    <div className="flex items-center gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                            {category.icon}
+                        </div>
+                        <CardTitle className="text-xl">{category.title}</CardTitle>
+                    </div>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <ul className="space-y-3">
                     {category.services.map((service) => (
-                      <li key={service.name} className="border-l-2 border-primary/20 pl-6 relative">
-                         <div className="absolute -left-[11px] top-1.5 h-5 w-5 bg-primary rounded-full border-4 border-secondary"></div>
-                        <h4 className="font-semibold text-base">{service.name}</h4>
-                        <p className="text-muted-foreground text-sm">{service.description}</p>
+                      <li key={service.name} className="flex items-start gap-3">
+                        <ChevronsRight className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                        <div>
+                            <h4 className="font-semibold text-base">{service.name}</h4>
+                            <p className="text-muted-foreground text-sm">{service.description}</p>
+                        </div>
                       </li>
                     ))}
                   </ul>
-                </AccordionContent>
-              </AccordionItem>
+                </CardContent>
+              </Card>
             ))}
-          </Accordion>
         </div>
         <div className="mt-16 text-center">
             <Button size="lg" asChild>

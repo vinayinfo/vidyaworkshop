@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Search, Cog, Bolt, Anchor, GitCommitHorizontal, Shell, Fuel } from 'lucide-react';
+import { Search, Cog, Bolt, Anchor, GitCommitHorizontal, Shell, Fuel, CircleDotDashed, Wrench, Shield, VenetianMask } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Header from '@/components/layout/header';
@@ -14,10 +14,12 @@ import { mockProducts } from '@/lib/mock-data';
 const partCategories = [
     { name: "Engine Parts", icon: <Cog className="h-8 w-8 text-primary" /> },
     { name: "Electrical Parts", icon: <Bolt className="h-8 w-8 text-primary" /> },
-    { name: "Brake Parts", icon: <Anchor className="h-8 w-8 text-primary" /> },
+    { name: "Braking System", icon: <Anchor className="h-8 w-8 text-primary" /> },
     { name: "Suspension & Steering", icon: <GitCommitHorizontal className="h-8 w-8 text-primary" /> },
     { name: "Body & Frame", icon: <Shell className="h-8 w-8 text-primary" /> },
     { name: "Consumables", icon: <Fuel className="h-8 w-8 text-primary" /> },
+    { name: "Tyres & Tubes", icon: <CircleDotDashed className="h-8 w-8 text-primary" /> },
+    { name: "Accessories", icon: <VenetianMask className="h-8 w-8 text-primary" /> },
 ];
 
 export default function ProductsPage() {
@@ -52,7 +54,7 @@ export default function ProductsPage() {
          <section className="py-16 bg-secondary">
             <div className="container mx-auto px-4 md:px-6">
                 <h2 className="text-3xl font-bold text-center mb-10">Our Spare Part Categories</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6">
                     {partCategories.map(category => (
                          <Card key={category.name} className="flex flex-col items-center justify-center p-4 text-center hover:shadow-lg transition-shadow">
                             <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">

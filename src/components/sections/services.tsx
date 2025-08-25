@@ -12,9 +12,9 @@ const serviceCategories = [
     title: 'General Service',
     icon: <Wrench className="h-6 w-6 text-primary" />,
     services: [
-      { name: 'Basic Service Package', description: 'Includes oil change, thorough cleaning, and a comprehensive brake check to ensure safety.' },
-      { name: 'Premium Service Package', description: 'A full-vehicle inspection combined with an engine tune-up for optimal performance.' },
-      { name: 'Annual Maintenance Package', description: 'A complete, once-a-year service that covers all essential checks and maintenance.' },
+      { name: 'Basic Service', description: 'Includes oil change, thorough cleaning, and a comprehensive brake check to ensure safety.' },
+      { name: 'Premium Service', description: 'A full-vehicle inspection combined with an engine tune-up for optimal performance.' },
+      { name: 'Annual Maintenance', description: 'A complete, once-a-year service that covers all essential checks and maintenance.' },
     ],
   },
   {
@@ -33,34 +33,36 @@ const serviceCategories = [
       { name: 'Battery Replacement', description: 'Testing and replacement with high-quality, long-lasting batteries.' },
       { name: 'Wiring Check & Repair', description: 'Comprehensive diagnosis and repair of all electrical wiring and components.' },
       { name: 'Headlight/Tail-light Replacement', description: 'Installation and alignment of lighting systems for maximum visibility.' },
+      { name: 'Ignition Repair', description: 'Troubleshooting and repair of ignition systems for reliable starting.' },
     ],
   },
   {
-    title: 'Suspension & Brakes',
+    title: 'Brakes & Suspension',
     icon: <Anchor className="h-6 w-6 text-primary" />,
     services: [
       { name: 'Brake Pad Replacement', description: 'High-quality brake pad installation for reliable and safe stopping power.' },
+      { name: 'Brake Disc Replacement', description: 'Inspection and replacement of brake discs for optimal braking performance.' },
+      { name: 'Shock Absorber Service', description: 'Restore ride comfort and handling with our suspension services.' },
       { name: 'Brake Fluid Replacement', description: 'Flushing and replacing brake fluid to ensure system integrity.' },
-      { name: 'Shock Absorber Repair/Replacement', description: 'Restore ride comfort and handling with our suspension services.' },
     ],
   },
    {
     title: 'Tyres & Wheels',
     icon: <CircleDotDashed className="h-6 w-6 text-primary" />,
     services: [
-      { name: 'Wheel Balancing', description: 'Precision wheel balancing to eliminate vibrations and ensure a smooth ride.' },
       { name: 'Tyre Replacement', description: 'Wide range of quality tyres with professional fitting services.' },
       { name: 'Tube Replacement', description: 'Quick and reliable puncture repair and tube replacement.' },
+      { name: 'Wheel Balancing & Alignment', description: 'Precision wheel balancing and alignment to eliminate vibrations and ensure a smooth ride.' },
     ],
   },
   {
-    title: 'Customization & Parts',
+    title: 'Customization & Accessories',
     icon: <Paintbrush className="h-6 w-6 text-primary" />,
     services: [
       { name: 'Exhaust Modification', description: 'Custom exhaust solutions for improved performance and a unique sound.' },
       { name: 'Seat Customization', description: 'Tailor-made seats for enhanced comfort and style on long rides.' },
       { name: 'Paint/Decals', description: 'Custom paint jobs and decal application to make your bike truly yours.' },
-      { name: 'Genuine Spare Parts', description: 'We stock and sell only genuine parts to guarantee the best for your bike.' },
+      { name: 'Handlebar/Grip Upgrade', description: 'Ergonomic and stylish handlebar and grip options for better control.' },
     ],
   },
 ];

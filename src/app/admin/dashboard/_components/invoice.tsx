@@ -27,7 +27,7 @@ export default function Invoice({ details }: InvoiceProps) {
   const totalSavings = totalMrp - subtotal;
   
   return (
-    <Card className="max-w-2xl mx-auto" id="invoice-content">
+    <Card className="max-w-2xl mx-auto invoice-card" id="invoice-content">
       <CardHeader className="p-6">
         <div className="flex justify-between items-start flex-col sm:flex-row sm:items-center">
             <div>
@@ -105,23 +105,15 @@ export default function Invoice({ details }: InvoiceProps) {
       </CardFooter>
       <style jsx global>{`
         @media print {
-          body * {
-            visibility: hidden;
+          body {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
           }
-          #invoice-dialog, #invoice-dialog * {
-            visibility: visible;
-          }
-          #invoice-dialog {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: auto;
-            box-shadow: none;
-            border: none;
-          }
-           #invoice-dialog .print-hidden {
-             display: none;
+          .print-hidden {
+             display: none !important;
+           }
+           #invoice-dialog {
+             display: none !important;
            }
            #invoice-items-scroll-area, 
            #invoice-items-scroll-area > div {
@@ -133,3 +125,5 @@ export default function Invoice({ details }: InvoiceProps) {
     </Card>
   )
 }
+
+    

@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { mockAttendance, mockEmployees } from "@/lib/mock-data"
-import { format, getMonth, getYear, parseISO } from "date-fns"
+import { format, getMonth, getYear, parseISO, getDaysInMonth } from "date-fns"
 
 export default function AttendanceChart() {
   const [selectedMonth, setSelectedMonth] = useState<string>((new Date().getMonth() + 1).toString());
@@ -26,25 +26,35 @@ export default function AttendanceChart() {
         const recordDate = parseISO(record.date);
         return getMonth(recordDate) === month && getYear(recordDate) === year;
     });
+
+    const daysInMonth = getDaysInMonth(new Date(year, month));
+    const dailyDataMap = new Map<string, { name: string, present: number, absent: number, onLeave: number }>();
+
+    // Initialize all days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+        const dayKey = format(date, "MMM d");
+        dailyDataMap.set(dayKey, { name: dayKey, present: 0, absent: 0, onLeave: 0 });
+    }
+
+    // Populate with actual data
+    filteredRecords.forEach(record => {
+        const dayKey = format(parseISO(record.date), "MMM d");
+        const dayData = dailyDataMap.get(dayKey);
+        if (dayData) {
+            if (record.status === 'Present') {
+                dayData.present++;
+            }
+            if (record.status === 'Absent') {
+                dayData.absent++;
+            }
+            if (record.status === 'On Leave') {
+                dayData.onLeave++;
+            }
+        }
+    });
     
-    const dailyAttendance = filteredRecords.reduce((acc, record) => {
-        const day = format(parseISO(record.date), "MMM d");
-        if (!acc[day]) {
-            acc[day] = { name: day, present: 0, absent: 0, onLeave: 0 };
-        }
-        if (record.status === 'Present') {
-            acc[day].present++;
-        }
-        if (record.status === 'Absent') {
-            acc[day].absent++;
-        }
-        if (record.status === 'On Leave') {
-            acc[day].onLeave++;
-        }
-        return acc;
-    }, {} as Record<string, {name: string, present: number, absent: number, onLeave: number}>);
-    
-    return Object.values(dailyAttendance).sort((a,b) => a.name.localeCompare(b.name));
+    return Array.from(dailyDataMap.values());
 
   }, [selectedMonth, selectedYear]);
 

@@ -6,7 +6,7 @@ import { useState, useMemo } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { PlusCircle, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
+import { PlusCircle, ChevronLeft, ChevronRight, ArrowLeft, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -22,12 +22,14 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
 import { useRouter } from 'next/navigation';
+import { Input } from '@/components/ui/input';
 
 
 const attendanceSchema = z.object({
   employeeId: z.string({ required_error: "Please select an employee." }),
   date: z.date({ required_error: "A date is required." }),
   status: z.enum(['Present', 'Absent', 'On Leave'], { required_error: "Status is required." }),
+  entryTime: z.string().optional(),
   reason: z.string().optional(),
 }).refine(data => {
     if (data.status === 'On Leave') {
@@ -37,6 +39,14 @@ const attendanceSchema = z.object({
 }, {
     message: "Reason is required when status is 'On Leave'.",
     path: ['reason'],
+}).refine(data => {
+    if (data.status === 'Present') {
+        return !!data.entryTime && data.entryTime.length > 0;
+    }
+    return true;
+}, {
+    message: "Entry time is required when status is 'Present'.",
+    path: ['entryTime'],
 });
 
 type AttendanceFormValues = z.infer<typeof attendanceSchema>;
@@ -59,6 +69,9 @@ export default function AttendanceCalendar() {
 
     const { register, handleSubmit, control, watch, reset, formState: { errors } } = useForm<AttendanceFormValues>({
         resolver: zodResolver(attendanceSchema),
+        defaultValues: {
+            entryTime: new Date().toTimeString().slice(0,5),
+        }
     });
 
     const watchStatus = watch('status');
@@ -205,6 +218,15 @@ export default function AttendanceCalendar() {
                                         {errors.status && <p className="text-xs text-destructive">{errors.status.message}</p>}
                                     </div>
                                 </div>
+                                
+                                {watchStatus === 'Present' && (
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="entryTime">Entry Time</Label>
+                                        <Input id="entryTime" type="time" {...register("entryTime")} />
+                                        {errors.entryTime && <p className="text-xs text-destructive">{errors.entryTime.message}</p>}
+                                    </div>
+                                )}
+                                
                                 {watchStatus === 'On Leave' && (
                                     <div className="grid gap-2">
                                         <Label htmlFor="reason">Reason for Leave</Label>
@@ -262,7 +284,14 @@ export default function AttendanceCalendar() {
                                                 <div className="grid gap-2">
                                                      {summary.records.map(record => (
                                                         <div key={record.id} className="grid grid-cols-[1fr,auto] items-center">
-                                                            <span className="font-medium text-sm">{getEmployeeName(record.employeeId)}</span>
+                                                            <div className="flex flex-col">
+                                                                <span className="font-medium text-sm">{getEmployeeName(record.employeeId)}</span>
+                                                                {record.status === 'Present' && record.entryTime && (
+                                                                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                                                        <Clock className="h-3 w-3" /> {record.entryTime}
+                                                                    </span>
+                                                                )}
+                                                             </div>
                                                              <Badge variant={getStatusVariant(record.status)}>{record.status}</Badge>
                                                         </div>
                                                     ))}

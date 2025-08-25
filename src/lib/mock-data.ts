@@ -48,6 +48,7 @@ export interface AttendanceRecord {
     employeeId: string;
     date: string;
     status: 'Present' | 'Absent' | 'On Leave';
+    entryTime?: string;
     reason?: string; // Optional reason for leave
 }
 
@@ -146,19 +147,25 @@ const generateAttendance = () => {
                     const statusRoll = Math.random();
                     let status: AttendanceRecord['status'] = 'Present';
                     let reason: string | undefined = undefined;
+                    let entryTime: string | undefined = undefined;
 
                     if (statusRoll > 0.9) { // 10% chance of being on leave
                         status = 'On Leave';
                         reason = 'Personal';
                     } else if (statusRoll > 0.8) { // 10% chance of being absent
                         status = 'Absent';
-                    } // 80% chance of being present
+                    } else { // 80% chance of being present
+                        const hour = Math.floor(Math.random() * 2) + 9; // 9-10 AM
+                        const minute = Math.floor(Math.random() * 60);
+                        entryTime = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                    }
 
                     records.push({
                         id: `ATT-${year}-${month}-${day}-${empId}`,
                         employeeId: empId,
                         date: date.toISOString().split('T')[0], // format as YYYY-MM-DD
                         status,
+                        ...(entryTime && { entryTime }),
                         ...(reason && { reason })
                     });
                 });

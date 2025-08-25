@@ -241,21 +241,14 @@ export default function AttendanceCalendar() {
                     </Dialog>
                 </div>
             </CardHeader>
-            <CardContent className="flex justify-center p-0 sm:p-4">
+            <CardContent className="p-0 sm:p-4">
                 <Calendar
                     mode="single"
                     selected={selectedDay ?? undefined}
                     onSelect={(day) => setSelectedDay(day ?? null)}
                     month={currentMonth}
                     onMonthChange={setCurrentMonth}
-                    className="rounded-md border w-full"
-                    classNames={{
-                        month: "w-full space-y-4",
-                        months: "w-full flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                        table: "w-full border-collapse space-y-1",
-                        head_row: "flex justify-around",
-                        row: "flex w-full mt-2 justify-around",
-                    }}
+                    className="p-0 w-full"
                     components={{
                         DayContent: DayContent
                     }}
@@ -265,5 +258,8 @@ export default function AttendanceCalendar() {
     )
 
     
+
+    
+}
 
     

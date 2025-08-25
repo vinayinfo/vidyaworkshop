@@ -13,6 +13,8 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import OverviewChart from './_components/overview-chart';
 import DailySalesChart from './_components/daily-sales-chart';
+import AttendanceChart from './_components/attendance-chart';
+import AttendanceTable from './_components/attendance-table';
 
 export default function Dashboard() {
     const router = useRouter();
@@ -117,21 +119,9 @@ export default function Dashboard() {
          <TabsContent value="expenses">
            <ExpensesTab />
         </TabsContent>
-         <TabsContent value="attendance">
-           <Card>
-                <CardHeader>
-                    <CardTitle>Employee Attendance</CardTitle>
-                    <CardDescription>
-                        This is where the employee attendance analysis page will be.
-                        For now, here's a link to the dedicated page.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Button asChild>
-                        <Link href="/admin/attendance">Go to Attendance Page</Link>
-                    </Button>
-                </CardContent>
-           </Card>
+         <TabsContent value="attendance" className="space-y-4">
+           <AttendanceChart />
+           <AttendanceTable />
         </TabsContent>
       </Tabs>
     </div>

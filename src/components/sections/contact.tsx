@@ -76,14 +76,7 @@ export default function Contact() {
             </Card>
           </div>
           <div className="overflow-hidden rounded-lg shadow-xl aspect-square">
-            <iframe
-                className="w-full h-full"
-                src="https://www.google.com/maps/embed/v1/place?key=&q=HGM4%2B3M%20Sitamarhi%2C%20Bihar"
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Workshop Location"
-              ></iframe>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4232.417654532755!2d85.50407787596332!3d26.58265437419582!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ecf118a3eafe7d%3A0xd41464ae42b81a88!2sVIDYA%20WORK%20SHOP%20%26%20ROYAL%20ENFIELD%20GENUINE%20PARTS!5e1!3m2!1sen!2sin!4v1756126933024!5m2!1sen!2sin" width="600" height="450" style={{border:0}} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" className='w-full h-full'></iframe>
           </div>
         </div>
       </div>

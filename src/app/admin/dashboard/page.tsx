@@ -11,6 +11,7 @@ import { mockProducts } from '@/lib/mock-data';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import OverviewChart from './_components/overview-chart';
 
 export default function Dashboard() {
     const router = useRouter();
@@ -84,6 +85,9 @@ export default function Dashboard() {
                     </Button>
                 </CardContent>
             </Card>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1">
+                <OverviewChart />
             </div>
         </TabsContent>
         <TabsContent value="inventory">

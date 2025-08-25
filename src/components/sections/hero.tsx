@@ -23,6 +23,16 @@ const heroImages = [
         src: "https://images.unsplash.com/photo-1620756260879-ab5d87a4a259?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxSb3lhbCUyMEVuZmllbGQlMjBtb3RvcmN5Y2xlfGVufDB8fHx8MTc1NjExMTg4OHww&ixlib=rb-4.1.0&q=80&w=1080",
         alt: "Close-up of a Royal Enfield motorcycle's fuel tank and logo",
         "data-ai-hint": "royal enfield classic"
+    },
+    {
+        src: "https://images.unsplash.com/photo-1622146365147-f40889153549?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxSb3lhbCUyMEVuZmllbGQlMjBtb3RvcmN5Y2xlfGVufDB8fHx8MTc1NjExMTg4OHww&ixlib=rb-4.1.0&q=80&w=1080",
+        alt: "Royal Enfield bike parked in front of a colorful wall",
+        "data-ai-hint": "royal enfield urban"
+    },
+    {
+        src: "https://images.unsplash.com/photo-1605313936939-a192a8315571?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8Um95YWwlMjBFbmZpZWxkJTIwbW90b3JjeWNsZXxlbnwwfHx8fDE3NTYxMTE4ODh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+        alt: "A Royal Enfield motorcycle from a low angle view",
+        "data-ai-hint": "royal enfield motorcycle"
     }
 ]
 

@@ -11,13 +11,16 @@ import { useToast } from '@/hooks/use-toast';
 import { mockParts, Part } from '@/lib/mock-data';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Label } from '@/components/ui/label';
+import SellPartDialog from './sell-part-dialog';
 
 type FormValues = Omit<Part, 'id'>;
 
 export default function InventoryTab() {
   const [parts, setParts] = useState<Part[]>(mockParts);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isAddPartDialogOpen, setIsAddPartDialogOpen] = useState(false);
+  const [partToSell, setPartToSell] = useState<Part | null>(null);
+
   const { toast } = useToast();
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormValues>();
@@ -26,7 +29,7 @@ export default function InventoryTab() {
     part.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
+  const onAddPartSubmit: SubmitHandler<FormValues> = (data) => {
     const newPart: Part = {
       id: `PART-${Date.now()}`,
       ...data,
@@ -39,78 +42,106 @@ export default function InventoryTab() {
       description: `${data.name} has been added to the inventory.`,
     });
     reset();
-    setIsDialogOpen(false);
+    setIsAddPartDialogOpen(false);
+  };
+
+  const handleSell = (part: Part) => {
+    setPartToSell(part);
+  }
+
+  const handleSaleComplete = (partId: string, quantitySold: number) => {
+    setParts(currentParts =>
+      currentParts.map(part =>
+        part.id === partId ? { ...part, stock: part.stock - quantitySold } : part
+      )
+    );
+    setPartToSell(null); // Close dialog
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Parts Inventory</CardTitle>
-        <div className="flex justify-between items-center pt-4">
-          <div className="relative w-full max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search parts..."
-              className="pl-8"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Parts Inventory</CardTitle>
+          <div className="flex justify-between items-center pt-4">
+            <div className="relative w-full max-w-sm">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search parts..."
+                className="pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <Dialog open={isAddPartDialogOpen} onOpenChange={setIsAddPartDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <PlusCircle className="mr-2 h-4 w-4" /> Add Part
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add New Part</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleSubmit(onAddPartSubmit)} className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                      <Label htmlFor="name">Part Name</Label>
+                      <Input id="name" {...register("name", { required: "Name is required" })} />
+                      {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+                  </div>
+                  <div className="grid gap-2">
+                      <Label htmlFor="mrp">MRP (₹)</Label>
+                      <Input id="mrp" type="number" {...register("mrp", { required: "MRP is required", min: 0 })} />
+                      {errors.mrp && <p className="text-xs text-destructive">{errors.mrp.message}</p>}
+                  </div>
+                  <div className="grid gap-2">
+                      <Label htmlFor="stock">Stock Quantity</Label>
+                      <Input id="stock" type="number" {...register("stock", { required: "Stock is required", min: 0 })} />
+                      {errors.stock && <p className="text-xs text-destructive">{errors.stock.message}</p>}
+                  </div>
+                  <Button type="submit">Save Part</Button>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <PlusCircle className="mr-2 h-4 w-4" /> Add Part
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add New Part</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
-                 <div className="grid gap-2">
-                    <Label htmlFor="name">Part Name</Label>
-                    <Input id="name" {...register("name", { required: "Name is required" })} />
-                    {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
-                </div>
-                 <div className="grid gap-2">
-                    <Label htmlFor="mrp">MRP (₹)</Label>
-                    <Input id="mrp" type="number" {...register("mrp", { required: "MRP is required", min: 0 })} />
-                    {errors.mrp && <p className="text-xs text-destructive">{errors.mrp.message}</p>}
-                </div>
-                 <div className="grid gap-2">
-                    <Label htmlFor="stock">Stock Quantity</Label>
-                    <Input id="stock" type="number" {...register("stock", { required: "Stock is required", min: 0 })} />
-                     {errors.stock && <p className="text-xs text-destructive">{errors.stock.message}</p>}
-                </div>
-                <Button type="submit">Save Part</Button>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Part Name</TableHead>
-              <TableHead>Part ID</TableHead>
-              <TableHead>MRP (₹)</TableHead>
-              <TableHead>Stock</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredParts.map(part => (
-              <TableRow key={part.id}>
-                <TableCell className="font-medium">{part.name}</TableCell>
-                <TableCell>{part.id}</TableCell>
-                <TableCell>{part.mrp.toFixed(2)}</TableCell>
-                <TableCell>{part.stock}</TableCell>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Part Name</TableHead>
+                <TableHead>Part ID</TableHead>
+                <TableHead>MRP (₹)</TableHead>
+                <TableHead>Stock</TableHead>
+                <TableHead className="text-right">Action</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+            </TableHeader>
+            <TableBody>
+              {filteredParts.map(part => (
+                <TableRow key={part.id}>
+                  <TableCell className="font-medium">{part.name}</TableCell>
+                  <TableCell>{part.id}</TableCell>
+                  <TableCell>{part.mrp.toFixed(2)}</TableCell>
+                  <TableCell>{part.stock}</TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="outline" size="sm" onClick={() => handleSell(part)} disabled={part.stock === 0}>
+                      Sell
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+      {partToSell && (
+        <SellPartDialog 
+          part={partToSell}
+          onOpenChange={() => setPartToSell(null)}
+          onSaleComplete={handleSaleComplete}
+        />
+      )}
+    </>
   );
 }

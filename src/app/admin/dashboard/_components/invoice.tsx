@@ -1,0 +1,106 @@
+
+"use client";
+
+import { Part } from '@/lib/mock-data';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+
+type InvoiceDetails = {
+  part: Part;
+  quantity: number;
+  discount: number;
+  customerName: string;
+  customerContact: string;
+  totalAmount: number;
+  invoiceId: string;
+  invoiceDate: string;
+};
+
+interface InvoiceProps {
+  details: InvoiceDetails;
+}
+
+export default function Invoice({ details }: InvoiceProps) {
+  const { part, quantity, discount, customerName, customerContact, totalAmount, invoiceId, invoiceDate } = details;
+  return (
+    <Card className="max-w-2xl mx-auto" id="invoice">
+      <CardHeader className="p-6">
+        <div className="flex justify-between items-center">
+            <div>
+                <h1 className="text-2xl font-bold">VIDYA WORK SHOP</h1>
+                <p className="text-muted-foreground">near HOTEL MINI TAJ, Sitamarhi, Bihar 843302, India</p>
+            </div>
+            <div className="text-right">
+                <h2 className="text-xl font-semibold text-primary">Invoice</h2>
+                <p className="text-sm"><strong>Invoice #:</strong> {invoiceId}</p>
+                <p className="text-sm"><strong>Date:</strong> {invoiceDate}</p>
+            </div>
+        </div>
+      </CardHeader>
+      <CardContent className="p-6">
+        <div>
+            <h3 className="text-lg font-semibold mb-2">Bill To:</h3>
+            <p>{customerName}</p>
+            <p>{customerContact}</p>
+        </div>
+        <Separator className="my-6" />
+        <div className="grid grid-cols-5 gap-4 font-semibold mb-2">
+            <div className="col-span-2">Item</div>
+            <div>Qty</div>
+            <div className="text-right">Price</div>
+            <div className="text-right">Amount</div>
+        </div>
+        <Separator className="my-2" />
+        <div className="grid grid-cols-5 gap-4 items-center">
+            <div className="col-span-2">{part.name} ({part.id})</div>
+            <div>{quantity}</div>
+            <div className="text-right">₹{part.mrp.toFixed(2)}</div>
+            <div className="text-right">₹{(part.mrp * quantity).toFixed(2)}</div>
+        </div>
+        <Separator className="my-6" />
+        <div className="grid grid-cols-2 gap-4">
+            <div></div>
+            <div className="space-y-2">
+                <div className="flex justify-between">
+                    <span>Subtotal</span>
+                    <span>₹{(part.mrp * quantity).toFixed(2)}</span>
+                </div>
+                 <div className="flex justify-between">
+                    <span>Discount</span>
+                    <span className="text-destructive">- {discount}%</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between font-bold text-lg">
+                    <span>Total</span>
+                    <span>₹{totalAmount.toFixed(2)}</span>
+                </div>
+            </div>
+        </div>
+      </CardContent>
+      <CardFooter className="p-6 text-center text-xs text-muted-foreground">
+        <p>Thank you for your business! | All sales are final.</p>
+      </CardFooter>
+      <style jsx global>{`
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          #invoice, #invoice * {
+            visibility: visible;
+          }
+          #invoice {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            border: none;
+            box-shadow: none;
+          }
+          .print\:hidden {
+              display: none;
+          }
+        }
+      `}</style>
+    </Card>
+  )
+}

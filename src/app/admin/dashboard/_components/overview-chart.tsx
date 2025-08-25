@@ -1,8 +1,9 @@
 
 "use client"
 
+import { useState } from "react"
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import {
   Select,
   SelectContent,
@@ -11,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-const data = [
+const monthlyData = [
   { name: "Jan", total: Math.floor(Math.random() * 50000) + 10000 },
   { name: "Feb", total: Math.floor(Math.random() * 50000) + 10000 },
   { name: "Mar", total: Math.floor(Math.random() * 50000) + 10000 },
@@ -27,19 +28,32 @@ const data = [
 ]
 
 export default function OverviewChart() {
+  const [year, setYear] = useState("2024");
+  
+  // In a real app, you'd fetch data for the selected year.
+  // For now, we'll just use the same random data.
+  const data = monthlyData;
+
   return (
      <Card className="w-full">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <CardTitle>Monthly Revenue Overview</CardTitle>
-        <Select defaultValue="2024">
-            <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select Year" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="2024">This Year (2024)</SelectItem>
-                <SelectItem value="2023">Last Year (2023)</SelectItem>
-            </SelectContent>
-        </Select>
+      <CardHeader>
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+            <div>
+                <CardTitle>Monthly Revenue Overview</CardTitle>
+                <CardDescription>
+                    Showing monthly revenue for the selected year.
+                </CardDescription>
+            </div>
+            <Select value={year} onValueChange={setYear}>
+                <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select Year" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="2024">This Year (2024)</SelectItem>
+                    <SelectItem value="2023">Last Year (2023)</SelectItem>
+                </SelectContent>
+            </Select>
+        </div>
       </CardHeader>
       <CardContent className="pl-2">
         <ResponsiveContainer width="100%" height={350}>
@@ -73,3 +87,5 @@ export default function OverviewChart() {
     </Card>
   )
 }
+
+    

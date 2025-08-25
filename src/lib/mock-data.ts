@@ -57,5 +57,16 @@ export const mockBookings: Booking[] = [
     { id: 'BOOK-104', customerName: 'Priya Singh', customerPhone: '+91 65432 10987', service: 'Custom Modifications', bookingDate: '2024-08-06', status: 'Pending' },
 ];
 
+export const mockDailySales = [
+  { name: "Sun", total: Math.floor(Math.random() * 5000) + 1000 },
+  { name: "Mon", total: Math.floor(Math.random() * 5000) + 1000 },
+  { name: "Tue", total: Math.floor(Math.random() * 5000) + 1000 },
+  { name: "Wed", total: Math.floor(Math.random() * 5000) + 1000 },
+  { name: "Thu", total: Math.floor(Math.random() * 5000) + 1000 },
+  { name: "Fri", total: Math.floor(Math.random() * 5000) + 1000 },
+  { name: "Sat", total: Math.floor(Math.random() * 5000) + 1000 },
+]
+
+    
 
     

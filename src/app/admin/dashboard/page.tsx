@@ -1,6 +1,6 @@
 
 "use client";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { BarChart, Bike, DollarSign, Package, Wrench, Users, List, ArrowRight } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -12,19 +12,24 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import OverviewChart from './_components/overview-chart';
+import DailySalesChart from './_components/daily-sales-chart';
 
 export default function Dashboard() {
     const router = useRouter();
+    const [totalStock, setTotalStock] = useState(0);
+    const [lowStockCount, setLowStockCount] = useState(0);
 
     useEffect(() => {
         const isLoggedIn = sessionStorage.getItem('isAdminLoggedIn');
         if (!isLoggedIn) {
             router.push('/admin');
         }
+        
+        // In a real app, this data would be fetched. For now, we calculate it on mount.
+        setTotalStock(mockProducts.reduce((sum, product) => sum + product.stock, 0));
+        setLowStockCount(mockProducts.filter(product => product.stock < 5).length);
+
     }, [router]);
-  
-  const totalStock = mockProducts.reduce((sum, product) => sum + product.stock, 0);
-  const lowStockProducts = mockProducts.filter(product => product.stock < 5);
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 bg-secondary/40">
@@ -75,7 +80,7 @@ export default function Dashboard() {
                     <List className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{lowStockProducts.length}</div>
+                    <div className="text-2xl font-bold">{lowStockCount}</div>
                     <p className="text-xs text-muted-foreground mb-2">Items with stock less than 5</p>
                     <Button asChild variant="outline" size="sm" className="mt-2">
                         <Link href="/admin/low-stock">
@@ -86,8 +91,13 @@ export default function Dashboard() {
                 </CardContent>
             </Card>
             </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1">
-                <OverviewChart />
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                <div className="lg:col-span-4">
+                    <OverviewChart />
+                </div>
+                 <div className="lg:col-span-3">
+                    <DailySalesChart />
+                </div>
             </div>
         </TabsContent>
         <TabsContent value="inventory">
@@ -100,3 +110,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+    

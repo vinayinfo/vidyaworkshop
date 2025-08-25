@@ -101,13 +101,54 @@ export const mockEmployees: Employee[] = [
     { id: 'EMP-01', name: 'Suresh Kumar', role: 'Head Mechanic' },
     { id: 'EMP-02', name: 'Ramesh Singh', role: 'Mechanic' },
     { id: 'EMP-03', name: 'Anil Yadav', role: 'Apprentice' },
+    { id: 'EMP-04', name: 'Vikas Sharma', role: 'Mechanic' },
+    { id: 'EMP-05', name: 'Deepak Gupta', role: 'Service Advisor' },
 ];
 
-export const mockAttendance: AttendanceRecord[] = [
-    { id: 'ATT-001', employeeId: 'EMP-01', date: '2024-07-20', status: 'Present' },
-    { id: 'ATT-002', employeeId: 'EMP-02', date: '2024-07-20', status: 'Present' },
-    { id: 'ATT-003', employeeId: 'EMP-03', date: '2024-07-20', status: 'On Leave', reason: 'Family event' },
-    { id: 'ATT-004', employeeId: 'EMP-01', date: '2024-07-21', status: 'Present' },
-    { id: 'ATT-005', employeeId: 'EMP-02', date: '2024-07-21', status: 'Absent' },
-    { id: 'ATT-006', employeeId: 'EMP-03', date: '2024-07-21', status: 'Present' },
-];
+const generateAttendance = () => {
+    const records: AttendanceRecord[] = [];
+    const employees = mockEmployees.map(e => e.id);
+    const today = new Date();
+    
+    // Generate data for current and previous year
+    for (let year of [today.getFullYear(), today.getFullYear() - 1]) {
+        // Generate data for all 12 months
+        for (let month = 0; month < 12; month++) {
+            // But only up to the current month for the current year
+            if (year === today.getFullYear() && month > today.getMonth()) continue;
+
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // For 5 days in each month
+            for (let i = 0; i < 5; i++) {
+                const day = Math.floor(Math.random() * daysInMonth) + 1;
+                const date = new Date(year, month, day);
+
+                // For each employee
+                employees.forEach(empId => {
+                    const statusRoll = Math.random();
+                    let status: AttendanceRecord['status'] = 'Present';
+                    let reason: string | undefined = undefined;
+
+                    if (statusRoll > 0.9) { // 10% chance of being on leave
+                        status = 'On Leave';
+                        reason = 'Personal';
+                    } else if (statusRoll > 0.8) { // 10% chance of being absent
+                        status = 'Absent';
+                    } // 80% chance of being present
+
+                    records.push({
+                        id: `ATT-${year}-${month}-${day}-${empId}`,
+                        employeeId: empId,
+                        date: date.toISOString().split('T')[0], // format as YYYY-MM-DD
+                        status,
+                        ...(reason && { reason })
+                    });
+                });
+            }
+        }
+    }
+    return records.filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i); // Remove duplicates
+}
+
+export const mockAttendance: AttendanceRecord[] = generateAttendance();

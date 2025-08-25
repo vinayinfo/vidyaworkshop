@@ -10,19 +10,19 @@ import Link from 'next/link';
 
 const heroImages = [
     {
-        src: "https://images.unsplash.com/photo-1542273042-5c73bc895ba3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb3RvcmN5Y2xlJTIwc2VydmljZXxlbnwwfHx8fDE3NTYxMDgyMDR8MA&ixlib=rb-4.1.0&q=80&w=1080",
-        alt: "A classic Bullet bike being serviced in a workshop",
-        "data-ai-hint": "motorcycle service"
+        src: "https://images.unsplash.com/photo-1629895693994-4c3817316773?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxSb3lhbCUyMEVuZmllbGQlMjBtb3RvcmN5Y2xlfGVufDB8fHx8MTc1NjExMTg4OHww&ixlib=rb-4.1.0&q=80&w=1080",
+        alt: "A classic Royal Enfield motorcycle parked on a street",
+        "data-ai-hint": "royal enfield motorcycle"
     },
     {
-        src: "https://images.unsplash.com/photo-1676247122495-97eea5629e64?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtb3RvcmN5Y2xlJTIwZW5naW5lfGVufDB8fHx8MTc1NjEwODIwM3ww&ixlib=rb-4.1.0&q=80&w=1080",
-        alt: "Close-up of a Royal Enfield engine",
-        "data-ai-hint": "motorcycle engine"
+        src: "https://images.unsplash.com/photo-1599422839994-670151121665?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxSb3lhbCUyMEVuZmllbGQlMjBtb3RvcmN5Y2xlfGVufDB8fHx8MTc1NjExMTg4OHww&ixlib=rb-4.1.0&q=80&w=1080",
+        alt: "A person riding a Royal Enfield on a scenic road",
+        "data-ai-hint": "royal enfield riding"
     },
     {
-        src: "https://images.unsplash.com/photo-1650569663281-44a28c984e2a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb3RvcmN5Y2xlJTIwcmVwYWlyfGVufDB8fHx8MTc1NjEwODIwM3ww&ixlib=rb-4.1.0&q=80&w=1080",
-        alt: "A mechanic working on a motorcycle wheel",
-        "data-ai-hint": "motorcycle repair"
+        src: "https://images.unsplash.com/photo-1620756260879-ab5d87a4a259?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxSb3lhbCUyMEVuZmllbGQlMjBtb3RvcmN5Y2xlfGVufDB8fHx8MTc1NjExMTg4OHww&ixlib=rb-4.1.0&q=80&w=1080",
+        alt: "Close-up of a Royal Enfield motorcycle's fuel tank and logo",
+        "data-ai-hint": "royal enfield classic"
     }
 ]
 

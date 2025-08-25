@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -63,6 +63,7 @@ export default function AttendanceCalendar() {
     const [employees] = useState<Employee[]>(mockEmployees);
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [isAddEntryDialogOpen, setIsAddEntryDialogOpen] = useState(false);
+    const [defaultTime, setDefaultTime] = useState('');
     const router = useRouter();
 
     const { toast } = useToast();
@@ -70,9 +71,15 @@ export default function AttendanceCalendar() {
     const { register, handleSubmit, control, watch, reset, formState: { errors } } = useForm<AttendanceFormValues>({
         resolver: zodResolver(attendanceSchema),
         defaultValues: {
-            entryTime: new Date().toTimeString().slice(0,5),
+            entryTime: '',
         }
     });
+
+    useEffect(() => {
+        if (isAddEntryDialogOpen) {
+            setDefaultTime(new Date().toTimeString().slice(0,5));
+        }
+    }, [isAddEntryDialogOpen]);
 
     const watchStatus = watch('status');
 
@@ -222,7 +229,7 @@ export default function AttendanceCalendar() {
                                 {watchStatus === 'Present' && (
                                     <div className="grid gap-2">
                                         <Label htmlFor="entryTime">Entry Time</Label>
-                                        <Input id="entryTime" type="time" {...register("entryTime")} />
+                                        <Input id="entryTime" type="time" {...register("entryTime")} defaultValue={defaultTime} />
                                         {errors.entryTime && <p className="text-xs text-destructive">{errors.entryTime.message}</p>}
                                     </div>
                                 )}

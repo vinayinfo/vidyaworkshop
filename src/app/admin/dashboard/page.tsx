@@ -1,5 +1,4 @@
 
-
 "use client";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -22,7 +21,7 @@ export default function Dashboard() {
     const [totalExpenses, setTotalExpenses] = useState(0);
     const [pendingBookings, setPendingBookings] = useState(0);
     const [absentToday, setAbsentToday] = useState(0);
-    const [showFinancials, setShowFinancials] = useState(true);
+    const [showFinancials, setShowFinancials] = useState(false);
 
     useEffect(() => {
         const isLoggedIn = sessionStorage.getItem('isAdminLoggedIn');

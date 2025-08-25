@@ -1,6 +1,33 @@
 
 import Link from 'next/link';
-import { Bike, Phone, Mail, MapPin } from 'lucide-react';
+import { Phone, Mail, MapPin } from 'lucide-react';
+
+const Logo = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        {...props}
+    >
+        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z" />
+        <path d="M12 6v2" />
+        <path d="M12 16v2" />
+        <path d="m16.24 7.76-.7.7" />
+        <path d="m8.46 15.54-.7.7" />
+        <path d="M18 12h-2" />
+        <path d="M8 12H6" />
+        <path d="m16.24 16.24-.7-.7" />
+        <path d="m8.46 8.46-.7-.7" />
+        <path d="m14 14-4-4" />
+        <path d="M15 8h-1.5a1.5 1.5 0 0 0-1.5 1.5V10" />
+        <path d="m9 16h1.5a1.5 1.5 0 0 0 1.5-1.5V14" />
+    </svg>
+);
+
 
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -24,7 +51,7 @@ export default function Footer() {
       <div className="container mx-auto grid grid-cols-1 gap-8 px-4 py-12 md:grid-cols-4 md:px-6">
         <div className="flex flex-col gap-4">
           <Link href="/" className="flex items-center gap-2">
-            <Bike className="h-8 w-8 text-primary" />
+            <Logo className="h-8 w-8 text-primary" />
             <span className="text-xl font-bold">VIDYA WORK SHOP</span>
           </Link>
           <p className="text-sm text-muted-foreground">

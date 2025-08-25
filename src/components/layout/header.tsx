@@ -31,10 +31,10 @@ export default function Header() {
   }, []);
 
   const navLinks = [
-    { href: '/#services', label: 'Services' },
+    { href: '/services', label: 'Services' },
     { href: '/parts', label: 'Products' },
-    { href: '/#about', label: 'About Us' },
-    { href: '/#contact', label: 'Contact' },
+    { href: '/about', label: 'About Us' },
+    { href: '/contact', label: 'Contact' },
   ];
 
   return (

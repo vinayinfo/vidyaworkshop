@@ -110,8 +110,9 @@ export default function Dashboard() {
                     <DailySalesChart />
                 </div>
             </div>
-             <div className="grid gap-4 grid-cols-1">
+             <div className="grid gap-4 md:grid-cols-2">
                 <AttendanceChart />
+                <WeeklyLeaveChart />
             </div>
         </TabsContent>
         <TabsContent value="inventory">
@@ -124,9 +125,6 @@ export default function Dashboard() {
            <ExpensesTab />
         </TabsContent>
          <TabsContent value="attendance" className="space-y-4">
-           <div className="grid gap-4 md:grid-cols-2">
-             <WeeklyLeaveChart />
-           </div>
            <AttendanceTable />
         </TabsContent>
       </Tabs>

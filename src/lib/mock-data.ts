@@ -41,6 +41,13 @@ export interface AttendanceRecord {
     reason?: string; // Optional reason for leave
 }
 
+export interface Sale {
+    id: string;
+    productId: string;
+    quantity: number;
+    saleDate: string;
+}
+
 
 export const mockProducts: Product[] = [
     { id: 'PART-001', name: 'Air Filter Assembly', category: 'Part', mrp: 750.00, sellingPrice: 720.00, stock: 15, image: 'https://images.unsplash.com/photo-1616237225529-67a423329d43?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb3RvcmN5Y2xlJTIwYWlyJTIwZmlsdGVyfGVufDB8fHx8MTc1NjExNDE0NHww&ixlib=rb-4.1.0&q=80&w=1080', imageHint: 'motorcycle air filter' },
@@ -152,3 +159,20 @@ const generateAttendance = () => {
 }
 
 export const mockAttendance: AttendanceRecord[] = generateAttendance();
+
+export const mockSales: Sale[] = [
+    { id: 'SALE-001', productId: 'PART-004', quantity: 15, saleDate: '2024-07-20' },
+    { id: 'SALE-002', productId: 'PART-001', quantity: 12, saleDate: '2024-07-20' },
+    { id: 'SALE-003', productId: 'PART-002', quantity: 10, saleDate: '2024-07-21' },
+    { id: 'SALE-004', productId: 'PART-005', quantity: 8, saleDate: '2024-07-21' },
+    { id: 'SALE-005', productId: 'PART-004', quantity: 7, saleDate: '2024-07-22' },
+    { id: 'SALE-006', productId: 'ACC-002', quantity: 6, saleDate: '2024-07-22' },
+    { id: 'SALE-007', productId: 'PART-001', quantity: 5, saleDate: '2024-07-23' },
+    { id: 'SALE-008', productId: 'ACC-001', quantity: 5, saleDate: '2024-07-23' },
+    { id: 'SALE-009', productId: 'PART-006', quantity: 4, saleDate: '2024-07-24' },
+    { id: 'SALE-010', productId: 'PART-004', quantity: 4, saleDate: '2024-07-24' },
+    { id: 'SALE-011', productId: 'PART-002', quantity: 3, saleDate: '2024-07-25' },
+    { id: 'SALE-012', productId: 'PART-003', quantity: 2, saleDate: '2024-07-25' },
+];
+
+    

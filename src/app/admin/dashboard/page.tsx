@@ -2,9 +2,9 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Home, Bike, DollarSign, Package, Wrench, Users, List, ArrowRight, TrendingUp, TrendingDown, CalendarCheck, FileText, BookOpen, Eye, EyeOff } from "lucide-react";
+import { Home, Bike, DollarSign, Package, Wrench, Users, List, ArrowRight, TrendingUp, TrendingDown, CalendarCheck, FileText, BookOpen, Eye, EyeOff, Award } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
-import { mockProducts, mockExpenses, mockBookings, mockAttendance } from '@/lib/mock-data';
+import { mockProducts, mockExpenses, mockBookings, mockAttendance, mockSales } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import OverviewChart from './_components/overview-chart';
@@ -22,6 +22,7 @@ export default function Dashboard() {
     const [pendingBookings, setPendingBookings] = useState(0);
     const [absentToday, setAbsentToday] = useState(0);
     const [showFinancials, setShowFinancials] = useState(false);
+    const [topProduct, setTopProduct] = useState<string>('');
 
     useEffect(() => {
         const isLoggedIn = sessionStorage.getItem('isAdminLoggedIn');
@@ -37,6 +38,15 @@ export default function Dashboard() {
 
         const todayString = new Date().toISOString().split('T')[0];
         setAbsentToday(mockAttendance.filter(a => a.date === todayString && a.status !== 'Present').length);
+
+        const salesCount = mockSales.reduce((acc, sale) => {
+            acc[sale.productId] = (acc[sale.productId] || 0) + sale.quantity;
+            return acc;
+        }, {} as Record<string, number>);
+
+        const topProductId = Object.keys(salesCount).reduce((a, b) => salesCount[a] > salesCount[b] ? a : b, '');
+        const topProductDetails = mockProducts.find(p => p.id === topProductId);
+        setTopProduct(topProductDetails?.name || 'N/A');
 
     }, [router]);
 
@@ -124,7 +134,7 @@ export default function Dashboard() {
                         <CardTitle>Management Sections</CardTitle>
                         <CardDescription>Navigate to different management areas of the workshop.</CardDescription>
                     </CardHeader>
-                    <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                         <Link href="/admin/inventory" className="block">
                             <Card className="hover:bg-muted transition-colors">
                                 <CardHeader className="flex flex-col items-center justify-center text-center p-4">
@@ -161,6 +171,15 @@ export default function Dashboard() {
                                 </CardHeader>
                             </Card>
                         </Link>
+                         <Link href="/admin/top-selling" className="block">
+                            <Card className="hover:bg-muted transition-colors">
+                                <CardHeader className="flex flex-col items-center justify-center text-center p-4">
+                                    <Award className="h-8 w-8 mb-2 text-primary" />
+                                    <CardTitle className="text-lg">Top Selling</CardTitle>
+                                    <CardDescription className="text-xs truncate">#1: {topProduct}</CardDescription>
+                                </CardHeader>
+                            </Card>
+                        </Link>
                     </CardContent>
                 </Card>
             </div>
@@ -181,3 +200,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+    

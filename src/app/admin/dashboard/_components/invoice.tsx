@@ -4,6 +4,7 @@
 import { CartItem } from './inventory-tab';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 type InvoiceDetails = {
   items: CartItem[];
@@ -57,15 +58,17 @@ export default function Invoice({ details }: InvoiceProps) {
                     <div className="text-right">Amount</div>
                 </div>
                 <Separator className="my-2" />
-                {items.map(item => (
-                    <div key={item.part.id} className="grid grid-cols-6 gap-4 items-center mb-2">
-                        <div className="col-span-2">{item.part.name} ({item.part.id})</div>
-                        <div className="text-center">{item.quantity}</div>
-                        <div className="text-right line-through text-muted-foreground">₹{item.part.mrp.toFixed(2)}</div>
-                        <div className="text-right">₹{item.part.sellingPrice.toFixed(2)}</div>
-                        <div className="text-right">₹{(item.part.sellingPrice * item.quantity).toFixed(2)}</div>
-                    </div>
-                ))}
+                <ScrollArea className="h-[200px] pr-4">
+                  {items.map(item => (
+                      <div key={item.part.id} className="grid grid-cols-6 gap-4 items-center mb-2">
+                          <div className="col-span-2">{item.part.name} ({item.part.id})</div>
+                          <div className="text-center">{item.quantity}</div>
+                          <div className="text-right line-through text-muted-foreground">₹{item.part.mrp.toFixed(2)}</div>
+                          <div className="text-right">₹{item.part.sellingPrice.toFixed(2)}</div>
+                          <div className="text-right">₹{(item.part.sellingPrice * item.quantity).toFixed(2)}</div>
+                      </div>
+                  ))}
+                </ScrollArea>
             </div>
         </div>
         <Separator className="my-6" />
@@ -121,3 +124,4 @@ export default function Invoice({ details }: InvoiceProps) {
     </Card>
   )
 }
+

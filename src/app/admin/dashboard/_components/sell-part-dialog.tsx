@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -73,7 +73,12 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
 
   if (invoiceDetails) {
       return (
-        <Dialog open={true} onOpenChange={onOpenChange}>
+        <Dialog open={true} onOpenChange={(open) => {
+          if (!open) {
+            setInvoiceDetails(null); // Reset when dialog is closed
+          }
+          onOpenChange(open);
+        }}>
             <DialogContent className="sm:max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>Invoice</DialogTitle>
@@ -94,6 +99,7 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Finalize Sale</DialogTitle>
+           <DialogDescription>Review the order and enter customer details to generate an invoice.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
           <div>

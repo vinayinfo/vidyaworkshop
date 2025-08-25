@@ -212,5 +212,4 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
     </Dialog>
   );
 }
-
     

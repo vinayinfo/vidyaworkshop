@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { mockBookings, Booking } from '@/lib/mock-data';
@@ -12,10 +13,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 
 
 export default function BookingsTab() {
   const [bookings, setBookings] = useState<Booking[]>(mockBookings);
+  const router = useRouter();
 
   const handleStatusChange = (bookingId: string, newStatus: 'Pending' | 'In Progress' | 'Completed' | 'Cancelled') => {
     setBookings(currentBookings =>
@@ -28,7 +32,13 @@ export default function BookingsTab() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Service Bookings</CardTitle>
+        <div className="flex items-center gap-4">
+          <Button variant="outline" size="icon" onClick={() => router.push('/admin/dashboard')}>
+              <ArrowLeft className="h-4 w-4" />
+              <span className="sr-only">Back</span>
+          </Button>
+          <CardTitle>Service Bookings</CardTitle>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">

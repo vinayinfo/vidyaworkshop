@@ -3,9 +3,10 @@
 
 import { useState } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { PlusCircle, Trash2 } from 'lucide-react';
+import { PlusCircle, Trash2, ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,6 +46,7 @@ export default function ExpensesTab() {
   const [expenses, setExpenses] = useState<Expense[]>(mockExpenses);
   const [isAddExpenseDialogOpen, setIsAddExpenseDialogOpen] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   const { register, handleSubmit, control, reset, formState: { errors } } = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseSchema),
@@ -81,9 +83,15 @@ export default function ExpensesTab() {
     <Card>
       <CardHeader>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-                <CardTitle>Expense Management</CardTitle>
-                <CardDescription>Track all your business expenses here.</CardDescription>
+            <div className='flex items-center gap-4'>
+                 <Button variant="outline" size="icon" onClick={() => router.push('/admin/dashboard')}>
+                    <ArrowLeft className="h-4 w-4" />
+                    <span className="sr-only">Back</span>
+                </Button>
+                <div>
+                    <CardTitle>Expense Management</CardTitle>
+                    <CardDescription>Track all your business expenses here.</CardDescription>
+                </div>
             </div>
             <Dialog open={isAddExpenseDialogOpen} onOpenChange={setIsAddExpenseDialogOpen}>
                 <DialogTrigger asChild>

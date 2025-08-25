@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
-import { PlusCircle, Search, QrCode, ShoppingCart, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { PlusCircle, Search, QrCode, ShoppingCart, X, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import SellPartDialog from './sell-part-dialog';
 import QrScannerDialog from './qr-scanner-dialog';
 import { Separator } from '@/components/ui/separator';
+import { useRouter } from 'next/navigation';
 
 type FormValues = Omit<Product, 'id'>;
 export type CartItem = { product: Product; quantity: number };
@@ -31,6 +32,7 @@ export default function InventoryTab() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [lastCartAction, setLastCartAction] = useState<{type: string, payload: any} | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const router = useRouter();
 
   const { toast } = useToast();
 
@@ -174,7 +176,13 @@ export default function InventoryTab() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle>Product Inventory</CardTitle>
+             <div className="flex items-center gap-4 mb-4">
+              <Button variant="outline" size="icon" onClick={() => router.push('/admin/dashboard')}>
+                  <ArrowLeft className="h-4 w-4" />
+                  <span className="sr-only">Back</span>
+              </Button>
+              <CardTitle>Product Inventory</CardTitle>
+            </div>
             <div className="flex flex-col md:flex-row justify-between items-center pt-4 gap-2">
               <div className="relative w-full max-w-sm">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />

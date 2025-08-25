@@ -1,20 +1,16 @@
 
+
 "use client";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { BarChart, Bike, DollarSign, Package, Wrench, Users, List, ArrowRight, TrendingUp, TrendingDown, CalendarCheck } from "lucide-react";
+import { BarChart, Bike, DollarSign, Package, Wrench, Users, List, ArrowRight, TrendingUp, TrendingDown, CalendarCheck, FileText, BookOpen } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import InventoryTab from './_components/inventory-tab';
-import BookingsTab from './_components/bookings-tab';
-import ExpensesTab from './_components/expenses-tab';
-import { mockProducts, mockExpenses } from '@/lib/mock-data';
+import { mockProducts, mockExpenses, mockBookings, mockAttendance } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import OverviewChart from './_components/overview-chart';
 import DailySalesChart from './_components/daily-sales-chart';
 import AttendanceChart from './_components/attendance-chart';
-import AttendanceCalendar from './_components/attendance-calendar';
 import WeeklyLeaveChart from './_components/weekly-leave-chart';
 
 export default function Dashboard() {
@@ -23,6 +19,8 @@ export default function Dashboard() {
     const [lowStockCount, setLowStockCount] = useState(0);
     const [totalRevenue, setTotalRevenue] = useState(452318.89);
     const [totalExpenses, setTotalExpenses] = useState(0);
+    const [pendingBookings, setPendingBookings] = useState(0);
+    const [absentToday, setAbsentToday] = useState(0);
 
     useEffect(() => {
         const isLoggedIn = sessionStorage.getItem('isAdminLoggedIn');
@@ -34,6 +32,10 @@ export default function Dashboard() {
         setTotalStock(mockProducts.reduce((sum, product) => sum + product.stock, 0));
         setLowStockCount(mockProducts.filter(product => product.stock < 5).length);
         setTotalExpenses(mockExpenses.reduce((sum, expense) => sum + expense.amount, 0));
+        setPendingBookings(mockBookings.filter(b => b.status === 'Pending').length);
+
+        const todayString = new Date().toISOString().split('T')[0];
+        setAbsentToday(mockAttendance.filter(a => a.date === todayString && a.status !== 'Present').length);
 
     }, [router]);
 
@@ -45,15 +47,7 @@ export default function Dashboard() {
        <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
         </div>
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="inventory">Inventory</TabsTrigger>
-          <TabsTrigger value="bookings">Bookings</TabsTrigger>
-          <TabsTrigger value="expenses">Expenses</TabsTrigger>
-          <TabsTrigger value="attendance">Attendance</TabsTrigger>
-        </TabsList>
-        <TabsContent value="overview" className="space-y-4">
+        <div className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -102,6 +96,54 @@ export default function Dashboard() {
                     </CardContent>
                 </Card>
             </div>
+            
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                 <Card className="col-span-1 lg:col-span-3">
+                    <CardHeader>
+                        <CardTitle>Management Sections</CardTitle>
+                        <CardDescription>Navigate to different management areas of the workshop.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <Link href="/admin/inventory" className="block">
+                            <Card className="hover:bg-muted transition-colors">
+                                <CardHeader className="flex flex-col items-center justify-center text-center p-4">
+                                    <Package className="h-8 w-8 mb-2 text-primary" />
+                                    <CardTitle className="text-lg">Inventory</CardTitle>
+                                    <CardDescription className="text-xs">{totalStock} items</CardDescription>
+                                </CardHeader>
+                            </Card>
+                        </Link>
+                         <Link href="/admin/bookings" className="block">
+                            <Card className="hover:bg-muted transition-colors">
+                                <CardHeader className="flex flex-col items-center justify-center text-center p-4">
+                                    <BookOpen className="h-8 w-8 mb-2 text-primary" />
+                                    <CardTitle className="text-lg">Bookings</CardTitle>
+                                    <CardDescription className="text-xs">{pendingBookings} pending</CardDescription>
+                                </CardHeader>
+                            </Card>
+                         </Link>
+                         <Link href="/admin/expenses" className="block">
+                             <Card className="hover:bg-muted transition-colors">
+                                <CardHeader className="flex flex-col items-center justify-center text-center p-4">
+                                    <FileText className="h-8 w-8 mb-2 text-primary" />
+                                    <CardTitle className="text-lg">Expenses</CardTitle>
+                                    <CardDescription className="text-xs">₹{totalExpenses.toLocaleString('en-IN')}</CardDescription>
+                                </CardHeader>
+                            </Card>
+                         </Link>
+                        <Link href="/admin/attendance" className="block">
+                            <Card className="hover:bg-muted transition-colors">
+                                <CardHeader className="flex flex-col items-center justify-center text-center p-4">
+                                    <CalendarCheck className="h-8 w-8 mb-2 text-primary" />
+                                    <CardTitle className="text-lg">Attendance</CardTitle>
+                                    <CardDescription className="text-xs">{absentToday} absent today</CardDescription>
+                                </CardHeader>
+                            </Card>
+                        </Link>
+                    </CardContent>
+                </Card>
+            </div>
+
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                 <div className="lg:col-span-4">
                     <OverviewChart />
@@ -114,22 +156,7 @@ export default function Dashboard() {
                 <AttendanceChart />
                 <WeeklyLeaveChart />
             </div>
-        </TabsContent>
-        <TabsContent value="inventory">
-            <InventoryTab />
-        </TabsContent>
-        <TabsContent value="bookings">
-           <BookingsTab />
-        </TabsContent>
-         <TabsContent value="expenses">
-           <ExpensesTab />
-        </TabsContent>
-         <TabsContent value="attendance" className="space-y-4">
-           <AttendanceCalendar />
-        </TabsContent>
-      </Tabs>
+        </div>
     </div>
   );
 }
-
-    

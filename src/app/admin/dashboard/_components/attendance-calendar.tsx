@@ -1,11 +1,12 @@
 
+
 "use client"
 
 import { useState, useMemo } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { PlusCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { PlusCircle, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -20,6 +21,7 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths,
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
+import { useRouter } from 'next/navigation';
 
 
 const attendanceSchema = z.object({
@@ -51,6 +53,7 @@ export default function AttendanceCalendar() {
     const [employees] = useState<Employee[]>(mockEmployees);
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [isAddEntryDialogOpen, setIsAddEntryDialogOpen] = useState(false);
+    const router = useRouter();
 
     const { toast } = useToast();
 
@@ -115,9 +118,15 @@ export default function AttendanceCalendar() {
          <Card>
             <CardHeader>
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <CardTitle>Attendance Calendar</CardTitle>
-                        <CardDescription>View monthly attendance at a glance. Click on dots for details.</CardDescription>
+                     <div className="flex items-center gap-4">
+                        <Button variant="outline" size="icon" onClick={() => router.push('/admin/dashboard')}>
+                            <ArrowLeft className="h-4 w-4" />
+                            <span className="sr-only">Back</span>
+                        </Button>
+                        <div>
+                            <CardTitle>Attendance Calendar</CardTitle>
+                            <CardDescription>View monthly attendance at a glance. Click on dots for details.</CardDescription>
+                        </div>
                     </div>
                      <Dialog open={isAddEntryDialogOpen} onOpenChange={setIsAddEntryDialogOpen}>
                         <DialogTrigger asChild>
@@ -209,7 +218,7 @@ export default function AttendanceCalendar() {
                     </Dialog>
                 </div>
             </CardHeader>
-            <CardContent className="p-4">
+            <CardContent>
                  <div className="flex items-center justify-between mb-4">
                     <Button variant="outline" size="icon" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
                         <ChevronLeft className="h-4 w-4" />

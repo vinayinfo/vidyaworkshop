@@ -3,7 +3,7 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { BarChart, Bike, DollarSign, Package, Wrench, Users, List, ArrowRight, TrendingUp, TrendingDown, CalendarCheck, FileText, BookOpen } from "lucide-react";
+import { BarChart, Bike, DollarSign, Package, Wrench, Users, List, ArrowRight, TrendingUp, TrendingDown, CalendarCheck, FileText, BookOpen, Eye, EyeOff } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { mockProducts, mockExpenses, mockBookings, mockAttendance } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import OverviewChart from './_components/overview-chart';
 import DailySalesChart from './_components/daily-sales-chart';
 import AttendanceChart from './_components/attendance-chart';
 import WeeklyLeaveChart from './_components/weekly-leave-chart';
+import { cn } from '@/lib/utils';
 
 export default function Dashboard() {
     const router = useRouter();
@@ -21,6 +22,7 @@ export default function Dashboard() {
     const [totalExpenses, setTotalExpenses] = useState(0);
     const [pendingBookings, setPendingBookings] = useState(0);
     const [absentToday, setAbsentToday] = useState(0);
+    const [showFinancials, setShowFinancials] = useState(true);
 
     useEffect(() => {
         const isLoggedIn = sessionStorage.getItem('isAdminLoggedIn');
@@ -46,6 +48,10 @@ export default function Dashboard() {
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 bg-secondary/40">
        <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+           <Button variant="ghost" size="icon" onClick={() => setShowFinancials(!showFinancials)}>
+                {showFinancials ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+                <span className="sr-only">Toggle financial visibility</span>
+            </Button>
         </div>
         <div className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -55,8 +61,12 @@ export default function Dashboard() {
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                    <div className="text-2xl font-bold">₹{totalRevenue.toLocaleString('en-IN')}</div>
-                    <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+                    <div className={cn("text-2xl font-bold", !showFinancials && "blur-sm")}>
+                      {showFinancials ? `₹${totalRevenue.toLocaleString('en-IN')}` : '₹ *******'}
+                    </div>
+                    <p className={cn("text-xs text-muted-foreground", !showFinancials && "blur-sm")}>
+                      {showFinancials ? '+20.1% from last month' : '********'}
+                    </p>
                     </CardContent>
                 </Card>
                  <Card>
@@ -65,8 +75,12 @@ export default function Dashboard() {
                     {isProfit ? <TrendingUp className="h-4 w-4 text-green-500" /> : <TrendingDown className="h-4 w-4 text-destructive" />}
                     </CardHeader>
                     <CardContent>
-                    <div className={`text-2xl font-bold ${isProfit ? 'text-green-600' : 'text-destructive'}`}>₹{netProfit.toLocaleString('en-IN')}</div>
-                    <p className="text-xs text-muted-foreground">Total Revenue - Total Expenses</p>
+                      <div className={cn("text-2xl font-bold", isProfit ? 'text-green-600' : 'text-destructive', !showFinancials && "blur-sm")}>
+                        {showFinancials ? `₹${netProfit.toLocaleString('en-IN')}` : '₹ *******'}
+                      </div>
+                      <p className={cn("text-xs text-muted-foreground", !showFinancials && "blur-sm")}>
+                        {showFinancials ? 'Total Revenue - Total Expenses' : '********'}
+                      </p>
                     </CardContent>
                 </Card>
                 <Card>

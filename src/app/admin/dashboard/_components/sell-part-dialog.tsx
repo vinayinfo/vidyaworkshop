@@ -108,47 +108,68 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
         printWindow.document.write(`
           <style>
             @media print {
-              @page { size: auto; margin: 0.5in; }
-              body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+              @page { 
+                size: auto; 
+                margin: 0.25in;
+              }
+              body { 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+              }
+              .invoice-card { 
+                border: 1px solid #ccc; 
+                box-shadow: none; 
+                page-break-inside: avoid;
+              }
+              .print-hidden { display: none !important; }
+              #invoice-items-scroll-area, 
+              #invoice-services-scroll-area {
+                height: auto !important;
+                max-height: none !important;
+                overflow: visible !important;
+              }
+              #invoice-items-scroll-area > div,
+              #invoice-services-scroll-area > div {
+                height: auto !important;
+                overflow: visible !important;
+              }
+              .line-through { text-decoration: line-through; }
+              .font-bold { font-weight: bold; }
+              .text-right { text-align: right; }
+              .text-center { text-align: center; }
+              .text-muted-foreground { color: #666; }
+              .text-destructive { color: #dc2626; }
+              .text-green-600 { color: #16a34a; }
+              .flex { display: flex; }
+              .justify-between { justify-content: space-between; }
+              .items-center { align-items: center; }
+              .items-start { align-items: flex-start; }
+              .p-6 { padding: 1rem; }
+              .my-6 { margin-top: 1.5rem; margin-bottom: 1.5rem; }
+              .mb-2 { margin-bottom: 0.5rem; }
+              .grid { display: grid; }
+              .gap-4 { gap: 1rem; }
+              .font-semibold { font-weight: 600; }
+              .text-sm { font-size: 0.875rem; }
+              .text-xs { font-size: 0.75rem; }
+              .text-lg { font-size: 1.125rem; }
+              .text-xl { font-size: 1.25rem; }
+              .text-2xl { font-size: 1.5rem; }
+              .separator, hr { border-top: 1px solid #eee; }
+              .break-words { word-wrap: break-word; }
+              .block { display: block; }
+
+              /* Specific grid layouts from invoice component */
+              .grid-cols-invoice-header { grid-template-columns: 1fr 1fr; }
+              .grid-cols-items { grid-template-columns: 2.5fr 0.5fr 1fr 1fr 1fr; }
+              .grid-cols-services { grid-template-columns: 3.5fr 1.5fr; }
+              .grid-cols-summary { grid-template-columns: 1fr 1fr; }
+              
+              .col-span-2 { grid-column: span 2 / span 2; }
             }
-            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.5; color: #333; }
-            .invoice-card { max-width: 800px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 0.5rem; }
-            .p-6 { padding: 1.5rem; }
-            .text-2xl { font-size: 1.5rem; line-height: 2rem; }
-            .font-bold { font-weight: 700; }
-            .text-muted-foreground { color: #64748b; }
-            .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
-            .flex { display: flex; }
-            .justify-between { justify-content: space-between; }
-            .items-start { align-items: flex-start; }
-            .items-center { align-items: center; }
-            .text-left { text-align: left; }
-            .text-right { text-align: right; }
-            .mt-4 { margin-top: 1rem; }
-            .mb-2 { margin-bottom: 0.5rem; }
-            .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
-            .font-semibold { font-weight: 600; }
-            .my-6 { margin-top: 1.5rem; margin-bottom: 1.5rem; }
-            hr, .separator { border-top: 1px solid #e2e8f0; }
-            .grid { display: grid; }
-            .grid-cols-items { grid-template-columns: 2.5fr 0.5fr 1fr 1fr 1fr; gap: 1rem; }
-            .grid-cols-services { grid-template-columns: 3.5fr 1.5fr; gap: 1rem; }
-            .col-span-2 { grid-column: span 2 / span 2; }
-            .text-center { text-align: center; }
-            .font-medium { font-weight: 500; }
-            .break-words { overflow-wrap: break-word; }
-            .block { display: block; }
-            .line-through { text-decoration: line-through; }
-            .space-y-2 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.5rem; }
-            .text-destructive { color: hsl(0 84.2% 60.2%); }
-            .text-green-600 { color: #16a34a; }
-            .text-xs { font-size: 0.75rem; line-height: 1rem; }
-            .text-center { text-align: center; }
-            .sm\\:flex-row { flex-direction: row; }
-            .sm\\:items-center { align-items: center; }
-            .sm\\:text-right { text-align: right; }
-            .sm\\:mt-0 { margin-top: 0px; }
-            .sm\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
           </style>
         `);
         printWindow.document.write('</head><body>');
@@ -156,7 +177,7 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
         printWindow.document.write('</body></html>');
         printWindow.document.close();
         printWindow.focus();
-        setTimeout(() => { // Timeout to ensure content is loaded
+        setTimeout(() => { 
             printWindow.print();
             printWindow.close();
         }, 250);
@@ -287,4 +308,6 @@ export default function SellPartDialog({ cart, onOpenChange, onSaleComplete }: S
     </Dialog>
   );
 }
+    
+
     
